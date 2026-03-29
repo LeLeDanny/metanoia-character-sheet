@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metanoia — Character Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="app-title">Metanoia</span>
+      <span class="app-subtitle">Character Sheet</span>
+    </div>
+    <div class="header-controls">
+      <span class="unsaved-dot" id="unsaved-dot" hidden aria-label="Unsaved changes">●</span>
+      <button class="btn" id="btn-new">New</button>
+      <label class="btn" for="file-input">Load</label>
+      <input type="file" id="file-input" accept=".json" hidden>
+      <button class="btn" id="btn-save">Save</button>
+      <button class="btn-icon" id="btn-theme" aria-label="Toggle theme">☀</button>
+    </div>
+  </header>
+
+  <main class="sheet-grid">
+
+    <div class="sheet-col">
+      <div class="sheet-stack">
+      <section class="sheet-section" id="section-identity">
+        <h2>Identity</h2>
+
+        <div class="field">
+          <label for="input-name">Name</label>
+          <input type="text" id="input-name" placeholder="Character name">
+        </div>
+
+        <div class="field mt-md">
+          <label for="select-realm">Realm</label>
+          <select id="select-realm">
+            <option value="0">0 — Void</option>
+            <option value="1">1 — Spark</option>
+            <option value="2">2 — Flame</option>
+            <option value="3">3 — Star</option>
+            <option value="4">4 — Constellation</option>
+            <option value="5">5 — Galaxy</option>
+          </select>
+        </div>
+
+        <div class="cols-3 mt-md">
+          <div class="field">
+            <label for="input-xp-total">XP Total</label>
+            <input type="number" id="input-xp-total" min="0" value="0">
+          </div>
+          <div class="field">
+            <label>XP Spent</label>
+            <span class="derived" id="xp-spent">0</span>
+          </div>
+          <div class="field">
+            <label>XP Left</label>
+            <span class="derived" id="xp-remaining">0</span>
+          </div>
+        </div>
+
+        <hr class="mt-md">
+
+        <div class="field mt-md">
+          <label>Lineages</label>
+          <table class="lineage-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Lineage</th>
+                <th>Law</th>
+                <th>Lvl</th>
+                <th>Die</th>
+              </tr>
+            </thead>
+            <tbody id="lineage-list"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="sheet-section" id="section-awareness">
+        <div class="section-heading">
+          <h2>Awareness</h2>
+          <button class="btn btn-sm" id="btn-awareness-ref" aria-label="Awareness states reference">?</button>
+        </div>
+        <div class="field">
+          <label for="select-awareness-state">State</label>
+          <select id="select-awareness-state">
+            <option value="cloaked">Cloaked</option>
+            <option value="suppressed" selected>Suppressed</option>
+            <option value="extended">Extended</option>
+            <option value="focused">Focused</option>
+          </select>
+        </div>
+        <div class="cols-2 mt-sm">
+          <div class="field">
+            <label for="input-awareness-xp">XP Invested</label>
+            <input type="number" id="input-awareness-xp" min="0" value="0">
+          </div>
+          <div class="field">
+            <label>Range (Bands)</label>
+            <span class="derived" id="awareness-range">3</span>
+          </div>
+        </div>
+      </section>
+
+      </div>
+
+      <div class="sheet-stack">
+      <section class="sheet-section" id="section-stride">
+        <div class="section-heading">
+          <h2>Stride</h2>
+          <button class="btn btn-sm" id="btn-stride-ref" aria-label="Range bands reference">?</button>
+        </div>
+        <div class="cols-2">
+          <div class="field">
+            <label for="input-stride-xp">XP Invested</label>
+            <input type="number" id="input-stride-xp" min="0" value="0">
+          </div>
+          <div class="field">
+            <label>Stride</label>
+            <span class="derived" id="stride-value">2</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sheet-section" id="section-values">
+        <div class="section-heading">
+          <h2>Values</h2>
+          <button class="btn btn-sm" id="btn-values-ref" aria-label="Values reference">?</button>
+        </div>
+        <div id="values-list"></div>
+      </section>
+      </div>
+
+    </div>
+
+    <div class="sheet-col">
+      <section class="sheet-section" id="section-conditions">
+        <div class="section-heading">
+          <h2>Conditions</h2>
+          <label class="wounded-label">
+            <input type="checkbox" id="check-wounded">
+            Wounded
+          </label>
+        </div>
+
+        <div id="conditions-list"></div>
+        <button class="polarity-add-btn mt-sm" id="btn-add-condition" type="button">+ Condition</button>
+      </section>
+
+      <div class="armor-strain-row">
+        <section class="sheet-section" id="section-armor">
+          <div class="section-heading">
+            <h2>Armor</h2>
+            <button class="btn btn-sm" id="btn-armor-ref" aria-label="Armor reference">?</button>
+          </div>
+          <table class="armor-table">
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th class="armor-th-center">AS</th>
+                <th></th>
+                <th class="armor-th-center">Abs</th>
+                <th></th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="armor-body"></tbody>
+          </table>
+        </section>
+
+        <div class="strain-env-col">
+          <section class="sheet-section" id="section-strain">
+            <h2>Strain</h2>
+
+            <div class="field">
+              <label>Strain Taken</label>
+              <div class="strain-tracker">
+                <button class="btn strain-step-btn" id="btn-strain-minus">−</button>
+                <input type="number" id="input-strain-current" class="strain-current-input" min="0">
+                <span class="strain-sep">/</span>
+                <span class="strain-max" id="strain-max">4</span>
+                <button class="btn strain-step-btn" id="btn-strain-plus">+</button>
+              </div>
+            </div>
+
+            <div class="warning" id="strain-unconscious-warning" hidden>Unconscious — not wounded</div>
+            <div class="warning" id="strain-dying-warning" hidden>Dying — allies have 1 round to stabilize</div>
+
+            <div class="cols-2 mt-md">
+              <div class="field">
+                <label for="select-strain-xp">XP Invested</label>
+                <select id="select-strain-xp">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Strain Max</label>
+                <span class="derived" id="strain-max-derived">4</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="sheet-section" id="section-env">
+            <h2>Env. Protection</h2>
+            <div class="armor-env-checks">
+              <label class="armor-env-label"><input type="checkbox" id="armor-env-hot"> Hot</label>
+              <label class="armor-env-label"><input type="checkbox" id="armor-env-cold"> Cold</label>
+              <label class="armor-env-label"><input type="checkbox" id="armor-env-decay"> Decay</label>
+              <label class="armor-env-label"><input type="checkbox" id="armor-env-electric"> Electric</label>
+            </div>
+          </section>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sheet-col">
+      <section class="sheet-section" id="section-active-abilities">
+        <h2>Active Abilities</h2>
+        <p class="placeholder">Ren abilities with auto-calculated AR</p>
+      </section>
+
+      <section class="sheet-section" id="section-passive-abilities">
+        <h2>Passive Abilities</h2>
+        <p class="placeholder">Permanent upgrades</p>
+      </section>
+
+      <section class="sheet-section" id="section-favor">
+        <h2>Favor</h2>
+        <p class="placeholder">Faction and personal standing</p>
+      </section>
+
+      <section class="sheet-section" id="section-notes">
+        <h2>Notes</h2>
+        <p class="placeholder">Free-text notes</p>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Load modules in dependency order before the orchestrator -->
+  <script src="modules/schema.js"></script>
+  <script src="modules/fileIO.js"></script>
+  <script src="modules/identity.js"></script>
+  <script src="modules/values.js"></script>
+  <script src="modules/awareness.js"></script>
+  <script src="modules/stride.js"></script>
+  <script src="modules/armor.js"></script>
+  <script src="modules/strain.js"></script>
+  <script src="modules/conditions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
