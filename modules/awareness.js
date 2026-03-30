@@ -8,7 +8,7 @@ const Awareness = (() => {
 
   function init(onUpdate) {
     buildModal();
-    document.getElementById('input-awareness-xp').addEventListener('input', onUpdate);
+    document.getElementById('select-awareness-xp').addEventListener('change', onUpdate);
     document.getElementById('select-awareness-state').addEventListener('change', onUpdate);
     document.getElementById('btn-awareness-ref').addEventListener('click', openModal);
   }
@@ -19,13 +19,13 @@ const Awareness = (() => {
     const state        = aw.state || 'suppressed';
     const hasAwareness = ((character.identity || {}).realm || 0) > 0;
 
-    const xpInput     = document.getElementById('input-awareness-xp');
+    const xpSelect    = document.getElementById('select-awareness-xp');
     const stateSelect = document.getElementById('select-awareness-state');
 
-    xpInput.disabled     = !hasAwareness;
+    xpSelect.disabled    = !hasAwareness;
     stateSelect.disabled = !hasAwareness;
 
-    setIfNotFocused('input-awareness-xp', String(xp));
+    xpSelect.value    = String(xp);
     stateSelect.value = state;
     document.getElementById('awareness-range').textContent = hasAwareness
       ? Schema.calcAwarenessRange(xp)
@@ -35,7 +35,7 @@ const Awareness = (() => {
   function read() {
     return {
       awareness: {
-        xpInvested: parseInt(document.getElementById('input-awareness-xp').value, 10) || 0,
+        xpInvested: parseInt(document.getElementById('select-awareness-xp').value, 10) || 0,
         state:      document.getElementById('select-awareness-state').value,
       },
     };

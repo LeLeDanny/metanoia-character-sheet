@@ -26,52 +26,74 @@ const Schema = (() => {
   // Ordered by base d8 hit result (1=Head, 2-3=Arms, 4-5=Legs, 6-8=Center)
   const HIT_LOCATIONS = ['head', 'arms', 'legs', 'center'];
 
-  const AWARENESS_STATES = {
-    cloaked:  { label: 'Cloaked / Suppressed' },
-    extended: { label: 'Extended' },
-    focused:  { label: 'Focused' },
+  const INTENTS = {
+    harm:      { label: 'Harm',          strain: 1, description: 'Deal damage' },
+    guard:     { label: 'Guard',         strain: 2, description: 'Protect against an effect, absorb damage' },
+    dodge:     { label: 'Dodge',         strain: 2, description: 'Avoid an effect entirely, up to your stride' },
+    heal:      { label: 'Heal',          strain: 1, description: 'Repair a wound, clear a condition, stabilize' },
+    recover:   { label: 'Recover',       strain: 3, description: 'Enhance Strain recovery during rest' },
+    seize:     { label: 'Seize',         strain: 1, description: 'Grab, hold, restrain, immobilize' },
+    move:      { label: 'Move',          strain: 1, description: 'Physically displace self up to your stride' },
+    displace:  { label: 'Displace',      strain: 1, description: 'Physically displace target' },
+    teleport:  { label: 'Teleport',      strain: 2, description: 'Instant relocation' },
+    condition: { label: 'Condition [X]', strain: 1, description: 'Apply a status effect or debuff' },
+    hide:      { label: 'Hide',          strain: 1, description: 'Conceal something, disguise, obscure' },
+    know:      { label: 'Know',          strain: 1, description: 'Gain information, detect, perceive, analyze' },
+    convince:  { label: 'Convince',      strain: 1, description: 'Influence a mind, persuade, intimidate, deceive' },
+    create:    { label: 'Create',        strain: 0, description: 'Make something from materials' },
+    manifest:  { label: 'Manifest',      strain: 1, description: 'Make something without materials' },
+    castX:     { label: 'Cast [X]',      strain: 1, description: 'Only for created or manifested things. The creation casts this ability on its own.' },
   };
 
-  const INTENTS = [
-    'Know', 'Hide', 'Convince', 'Create', 'Recover', 'Seize',
-    'Dodge', 'Guard', 'Harm', 'Condition', 'Teleport', 'Move', 'Cast[X]',
-  ];
-
-  const DURATION_TYPES = {
-    sparked:    { label: 'Sparked',    complexity: 0 },
-    maintained: { label: 'Maintained', complexity: 1 },
-    charged:    { label: 'Charged',    complexity: 2 },
-    stabilized: { label: 'Stabilized', complexity: 3 },
+  const ABILITY_AWARENESS = {
+    suppressed: {
+      label: 'Suppressed',
+      description: 'Originates from your body. Self, touch, or traveling outward.',
+      substates: {
+        touch: { label: 'Touch', strain: 0, description: 'Self or direct contact' },
+        arc:   { label: 'Arc',   strain: 1, description: 'Cone or sweep outward from you' },
+        line:  { label: 'Line',  strain: 1, description: 'Beam from you through targets in its path' },
+      },
+    },
+    extended: {
+      label: 'Extended',
+      description: 'Radiates outward from you in all directions. Radius scales with Realm.',
+      substates: {
+        aura: { label: 'Aura', strain: 1, description: 'Radial field around you' },
+      },
+      allowedIntents: ['harm', 'guard', 'move', 'displace', 'heal', 'recover', 'condition', 'hide', 'know', 'convince'],
+    },
+    focused: {
+      label: 'Focused',
+      description: 'Targets or manifests at a specific location, entity, or point at range.',
+      substates: {
+        single:    { label: 'Single',    strain: 1, description: 'One target at range' },
+        ricochet:  { label: 'Ricochet',  strain: 2, description: 'Hits a total of 2 targets' },
+        chain:     { label: 'Chain',     strain: 3, description: 'Hits a total of 3 targets' },
+        narrow:    { label: 'Narrow',    strain: 2, description: 'Around a point at range (radius 1)', dimension: 'r1' },
+        wide:      { label: 'Wide',      strain: 3, description: 'Around a point at range (radius 3)', dimension: 'r3' },
+        massive:   { label: 'Massive',   strain: 4, description: 'Around a point at range (radius 5)', dimension: 'r5' },
+      },
+    },
   };
 
-  const DURATION_FRAMES = {
-    exchange:    { label: 'Exchange',    complexity: 1 },
-    encounter:   { label: 'Encounter',   complexity: 2 },
-    engagement:  { label: 'Engagement',  complexity: 3 },
-    exploration: { label: 'Exploration', complexity: 4 },
-    expedition:  { label: 'Expedition',  complexity: 5 },
-    permanent:   { label: 'Permanent',   complexity: 6 },
+  const DURATIONS = {
+    instant:    { label: 'Instant',    strain: 0, description: 'Resolves immediately. One round of action, a single swing, a single moment.' },
+    charged:    { label: 'Charged',    strain: 1, description: 'Lies dormant until triggered, activates once, then disappears.' },
+    sustained:  { label: 'Sustained',  strain: 1, description: 'Lasts a frame. A tavern negotiation, a battle, a chase through the streets.' },
+    persistent: { label: 'Persistent', strain: 2, description: 'Lasts across multiple scenes, a stretch of travel, or longer.' },
+    permanent:  { label: 'Permanent',  strain: 4, description: 'Until destroyed or dispelled. Outlasts the caster.' },
   };
 
-  const AREA_SIZES = {
-    none:     { label: 'N/A',        complexity: 0 },
-    targets3: { label: '3 Targets',  complexity: 1 },
-    d2:       { label: '2D',         complexity: 2 },
-    d3:       { label: '3D',         complexity: 3 },
+  const CONDITIONS = {
+    weakened:           { label: 'Weakened',            hasDetail: false, description: 'Enemy die steps down by strain value' },
+    maimed:             { label: 'Maimed',              hasDetail: false, description: 'Disables abilities equal to strain value' },
+    escalating:         { label: 'Escalating',          hasDetail: true,  detailPlaceholder: 'e.g. Burning, Bleeding', description: 'Loses strain equal to condition value each round' },
+    sensoryDeprivation: { label: 'Sensory Deprivation', hasDetail: true,  detailPlaceholder: 'e.g. Sight, Hearing',   description: 'Blocks senses equal to strain value; rolls using blocked senses lose a die' },
+    slowed:             { label: 'Slowed',              hasDetail: false, description: 'Stride reduced by strain value' },
   };
 
-  const AREA_RADII = {
-    none:      { label: 'N/A',           complexity: 0 },
-    band2:     { label: 'Band 2',        complexity: 1 },
-    band3:     { label: 'Band 3',        complexity: 2 },
-    band4zone: { label: 'Band 4 / Zone', complexity: 3 },
-    band56:    { label: 'Band 5-6',      complexity: 4 },
-  };
-
-  const ABILITY_TYPES = {
-    effect:    { label: 'Effect or Projectile', complexity: 0 },
-    construct: { label: 'Construct',            complexity: 1 },
-  };
+  const MAX_ACTIVE_ABILITIES = 20;
 
   const FAVOR_TYPES = ['Local Faction', 'Personal', 'Organizational'];
 
@@ -268,26 +290,20 @@ const Schema = (() => {
     return 2 + realm;
   }
 
-  function calcAbilityComplexity(ability) {
-    const intentCount   = (ability.intents ?? []).length;
-    const durationType  = (DURATION_TYPES[ability.durationType]  || {}).complexity ?? 0;
-    const durationFrame = (DURATION_FRAMES[ability.durationFrame] || {}).complexity ?? 0;
-    const area          = (AREA_SIZES[ability.area]               || {}).complexity ?? 0;
-    const areaRadius    = (AREA_RADII[ability.areaRadius]         || {}).complexity ?? 0;
-    const type          = (ABILITY_TYPES[ability.type]            || {}).complexity ?? 0;
-    return intentCount + durationType + durationFrame + area + areaRadius + type;
-  }
-
-  function calcAbilityRealm(complexity) {
-    return Math.floor(complexity / 2);
-  }
-
-  function calcCastCost(abilityRealm, characterRealm) {
-    const diff = abilityRealm - characterRealm;
-    if (diff <= -2) return 0;
-    if (diff === -1) return 1;
-    if (diff === 0)  return 2;
-    return 4;
+  function calcAbilityStrainCost(ability) {
+    const intents = ability.intents ?? [];
+    const intentStrain = intents.reduce((sum, key) => {
+      if (key === 'condition') {
+        const count = (ability.conditionDetails || []).length;
+        return sum + Math.max(1, count);
+      }
+      return sum + ((INTENTS[key] || {}).strain ?? 0);
+    }, 0);
+    const state    = ABILITY_AWARENESS[ability.awarenessState];
+    const substate = state && state.substates[ability.awarenessSubstate];
+    const awarenessStrain = substate ? substate.strain : 0;
+    const durationStrain  = (DURATIONS[ability.duration] || {}).strain ?? 0;
+    return intentStrain + awarenessStrain + durationStrain;
   }
 
   function calcXpSpent(character) {
@@ -345,13 +361,12 @@ const Schema = (() => {
 
   return {
     LINEAGES, REALM_NAMES, ARMOR_MATERIALS, HIT_LOCATIONS,
-    AWARENESS_STATES, INTENTS, DURATION_TYPES, DURATION_FRAMES,
-    AREA_SIZES, AREA_RADII, ABILITY_TYPES, FAVOR_TYPES,
-    PASSIVE_ABILITY_NAMES, LINEAGE_POLARITIES,
+    INTENTS, ABILITY_AWARENESS, DURATIONS, CONDITIONS, MAX_ACTIVE_ABILITIES,
+    FAVOR_TYPES, PASSIVE_ABILITY_NAMES, LINEAGE_POLARITIES,
     VALUE_RANK_DIE, BASELINE_VALUES, POLARITIES_BY_CATEGORY,
     LINEAGE_POLARITY_DIE, STANDARD_XP_DIE,
     calcStrainMax, calcStride, calcAwarenessRange, calcStartingFavor,
-    calcAbilityComplexity, calcAbilityRealm, calcCastCost, calcXpSpent,
+    calcAbilityStrainCost, calcXpSpent,
     newId, blankCharacter,
   };
 })();

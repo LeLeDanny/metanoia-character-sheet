@@ -143,8 +143,8 @@ modules/
 The following values are derived from other fields and must be calculated by the app, not entered manually:
 
 - Strain Max: `4 + (2 × (Realm + XP invested in Strain))`
-- Ability Realm (AR): `floor(Total Complexity / 2)`
-- Cast Cost: derived from AR vs character Realm
+- Ability Strain Cost: sum of intent costs + awareness substate + duration
+- Ability free threshold: free if Strain Cost <= character Realm
 - Stride: `2 + XP invested in Stride`
 - Starting Favor pool: `2 + Realm`
 

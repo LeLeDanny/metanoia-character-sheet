@@ -40,6 +40,7 @@ const FileIO = (() => {
     if ('showSaveFilePicker' in window) {
       try {
         const handle = await window.showSaveFilePicker({
+          id: 'metanoia-characters',
           suggestedName: filename,
           types: [{ description: 'Metanoia Character', accept: { 'application/json': ['.json'] } }],
         });

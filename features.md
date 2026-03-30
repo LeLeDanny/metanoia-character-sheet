@@ -207,27 +207,33 @@ Named conditions with strain ratings tracking ongoing injuries and effects.
 
 **Status:** `planned`
 
-A structured form for creating and storing active abilities. Auto-calculates complexity and AR.
+A structured form for creating and storing active abilities. Auto-calculates Strain cost.
 
 Each ability stores:
 
+- Name (free text)
 - Polarity (dropdown from character's current polarity list)
 - Description (text area)
-- Awareness state (radio: Cloaked/Suppressed, Extended, Focused)
-- Intents (checkboxes, multiple allowed): Know, Hide, Convince, Create, Recover, Seize, Dodge, Guard, Harm, Condition, Teleport, Move, Cast\[X\]
-- Duration type (radio): Sparked (0), Maintained (1), Charged (2), Stabilized (3)
-- Duration frame (radio): Exchange (1), Encounter (2), Engagement (3), Exploration (4), Expedition (5), Permanent (6)
-- Area (radio): N/A (0), 3 Targets (1), 2D (2), 3D (3)
-- Area radius (radio): N/A (0), Band 2 (1), Band 3 (2), Band 4/Zone (3), Band 5-6 (4)
-- Type (radio): Effect or Projectile (0), Construct (1)
+- Intents (checkboxes, multiple allowed, Strain cost shown per intent):
+  Harm (1), Guard (1), Dodge (1), Heal (1), Recover (3), Seize (1), Move (1), Displace (1), Teleport (2), Condition \[X\] (1), Hide (1), Know (1), Convince (1), Create (0), Manifest (1), Cast \[X\] (1)
+- Awareness state (radio: Suppressed, Extended, Focused)
+- Awareness substate (radio, options depend on selected state):
+  - Suppressed: Touch (+0), Arc (+1), Line (+1)
+  - Extended: Aura (+1)
+  - Focused: Single (+1), Ricochet (+2), Chain (+3), Cover (+1), Barrier (+2), Narrow (+2), Wide (+3), Massive (+4)
+- Duration (radio): Instant (+0), Charged (+1), Sustained (+1), Persistent (+2), Permanent (+4)
 
 Calculated and displayed:
 
-- Total Complexity (sum of all components)
-- Ability Realm / AR (`floor(Complexity / 2)`)
-- Cast Cost at character's current Realm (table lookup displayed inline)
+- Strain Cost: sum of intent costs + awareness substate cost + duration cost
+- Whether the ability is free at the character's current Realm (free if Strain Cost <= Realm)
 
-Max active abilities: `Realm × 5`, displayed as a counter. Abilities beyond the max are flagged, not blocked.
+Validation notes:
+
+- Extended awareness only allows: Harm, Guard, Move, Displace, Heal, Recover, Condition, Hide, Know, Convince
+- Sustained abilities drop if the character's awareness state changes (display as a note, not enforced)
+
+Max active abilities: 20, displayed as a counter. Abilities beyond the max are flagged, not blocked.
 
 ---
 

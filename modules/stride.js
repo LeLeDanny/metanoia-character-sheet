@@ -8,20 +8,20 @@ const Stride = (() => {
 
   function init(onUpdate) {
     buildModal();
-    document.getElementById('input-stride-xp').addEventListener('input', onUpdate);
+    document.getElementById('select-stride-xp').addEventListener('change', onUpdate);
     document.getElementById('btn-stride-ref').addEventListener('click', openModal);
   }
 
   function render(character) {
     const xp = (character.stride || {}).xpInvested || 0;
-    setIfNotFocused('input-stride-xp', String(xp));
+    document.getElementById('select-stride-xp').value = String(xp);
     document.getElementById('stride-value').textContent = Schema.calcStride(xp);
   }
 
   function read() {
     return {
       stride: {
-        xpInvested: parseInt(document.getElementById('input-stride-xp').value, 10) || 0,
+        xpInvested: parseInt(document.getElementById('select-stride-xp').value, 10) || 0,
       },
     };
   }
@@ -71,13 +71,6 @@ const Stride = (() => {
 
   function openModal()  { document.getElementById('stride-modal').hidden = false; }
   function closeModal() { document.getElementById('stride-modal').hidden = true;  }
-
-  // ─── Private helpers ──────────────────────────────────────────
-
-  function setIfNotFocused(id, value) {
-    const el = document.getElementById(id);
-    if (el && document.activeElement !== el) el.value = value;
-  }
 
   return { init, render, read };
 })();

@@ -100,8 +100,15 @@
         </div>
         <div class="cols-2 mt-sm">
           <div class="field">
-            <label for="input-awareness-xp">XP Invested</label>
-            <input type="number" id="input-awareness-xp" min="0" value="0">
+            <label for="select-awareness-xp">XP Invested</label>
+            <select id="select-awareness-xp">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
           </div>
           <div class="field">
             <label>Range (Bands)</label>
@@ -120,8 +127,15 @@
         </div>
         <div class="cols-2">
           <div class="field">
-            <label for="input-stride-xp">XP Invested</label>
-            <input type="number" id="input-stride-xp" min="0" value="0">
+            <label for="select-stride-xp">XP Invested</label>
+            <select id="select-stride-xp">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
           </div>
           <div class="field">
             <label>Stride</label>
@@ -229,8 +243,12 @@
 
     <div class="sheet-col">
       <section class="sheet-section" id="section-active-abilities">
-        <h2>Active Abilities</h2>
-        <p class="placeholder">Ren abilities with auto-calculated AR</p>
+        <div class="section-heading">
+          <h2>Active Abilities</h2>
+          <span class="ability-counter" id="ability-counter">0 / 20</span>
+        </div>
+        <div id="abilities-list"></div>
+        <button class="polarity-add-btn mt-sm" id="btn-add-ability" type="button">+ Ability</button>
       </section>
 
       <section class="sheet-section" id="section-passive-abilities">
@@ -261,6 +279,8 @@
   <script src="modules/armor.js"></script>
   <script src="modules/strain.js"></script>
   <script src="modules/conditions.js"></script>
+  <script src="modules/activeAbilities.js"></script>
   <script src="app.js"></script>
+  <div class="snackbar" id="snackbar"></div>
 </body>
 </html>

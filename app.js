@@ -19,6 +19,7 @@ function mergeFromModules() {
   Object.assign(character, Armor.read());
   Object.assign(character, Strain.read());
   Object.assign(character, Conditions.read());
+  Object.assign(character, ActiveAbilities.read());
 }
 
 function renderModules() {
@@ -29,6 +30,7 @@ function renderModules() {
   Armor.render(character);
   Strain.render(character);
   Conditions.render(character);
+  ActiveAbilities.render(character);
 }
 
 // ─── Unsaved indicator ────────────────────────────────────────
@@ -102,4 +104,37 @@ Stride.init(onUpdate);
 Armor.init(onUpdate);
 Strain.init(onUpdate);
 Conditions.init(onUpdate);
+ActiveAbilities.init(onUpdate, function(cost) {
+  var strainMax = Schema.calcStrainMax(
+    (character.identity || {}).realm || 0,
+    (character.strain || {}).xpInvested || 0
+  );
+  character.strain.current = Math.min((character.strain.current || 0) + cost, strainMax);
+  renderModules();
+  setDirty(true);
+  flashStrainSection(cost);
+});
+
+let _snackbarTimer = null;
+
+function flashStrainSection(cost) {
+  var section = document.getElementById('section-strain');
+  if (section) {
+    section.classList.remove('strain-flash');
+    void section.offsetWidth; // force reflow to restart animation
+    section.classList.add('strain-flash');
+    section.addEventListener('animationend', function() {
+      section.classList.remove('strain-flash');
+    }, { once: true });
+  }
+
+  var snackbar = document.getElementById('snackbar');
+  if (!snackbar) return;
+  snackbar.textContent = '+' + cost + ' strain';
+  snackbar.classList.add('snackbar-visible');
+  clearTimeout(_snackbarTimer);
+  _snackbarTimer = setTimeout(function() {
+    snackbar.classList.remove('snackbar-visible');
+  }, 2000);
+}
 renderModules();
