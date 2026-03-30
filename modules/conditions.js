@@ -10,7 +10,6 @@ const Conditions = (() => {
 
   function init(onUpdate) {
     _onUpdate = onUpdate;
-    document.getElementById('check-wounded').addEventListener('change', onUpdate);
     document.getElementById('btn-add-condition').addEventListener('click', addCondition);
     var list = document.getElementById('conditions-list');
     list.addEventListener('click', handleListClick);
@@ -20,23 +19,20 @@ const Conditions = (() => {
 
   function render(character) {
     reconcile(character.conditions || []);
-    document.getElementById('check-wounded').checked = !!character.wounded;
   }
 
   function read() {
     var conditions = [];
     document.querySelectorAll('#conditions-list .condition-card').forEach(function(card) {
       conditions.push({
-        id:     card.dataset.id,
-        type:   card.querySelector('.condition-type').value,
-        detail: card.querySelector('.condition-detail').value.trim(),
-        rating: parseInt(card.dataset.rating, 10) || 0,
+        id:      card.dataset.id,
+        type:    card.querySelector('.condition-type').value,
+        detail:  card.querySelector('.condition-detail').value.trim(),
+        rating:  parseInt(card.dataset.rating, 10) || 0,
+        isWound: card.querySelector('.condition-is-wound').checked,
       });
     });
-    return {
-      wounded:    document.getElementById('check-wounded').checked,
-      conditions: conditions,
-    };
+    return { conditions: conditions };
   }
 
   // ─── Reconcile ────────────────────────────────────────────────
@@ -75,6 +71,7 @@ const Conditions = (() => {
           '<span class="condition-rating">1</span>' +
           '<button class="btn btn-sm condition-inc" type="button">+</button>' +
         '</div>' +
+        '<label class="condition-wound-toggle" title="Mark as wound"><input type="checkbox" class="condition-is-wound"> Wound</label>' +
         '<button class="btn-icon condition-delete" type="button" aria-label="Remove">\u00d7</button>' +
       '</div>' +
       '<div class="condition-hint" hidden></div>' +
@@ -108,6 +105,9 @@ const Conditions = (() => {
       detailInput.placeholder = condDef.detailPlaceholder || '';
       if (document.activeElement !== detailInput) detailInput.value = detail;
     }
+
+    card.querySelector('.condition-is-wound').checked = !!data.isWound;
+    card.classList.toggle('condition-is-wound-active', !!data.isWound);
 
     card.dataset.rating = String(rating);
     ratingSpan.textContent = rating;
@@ -155,6 +155,12 @@ const Conditions = (() => {
   }
 
   function handleListChange(e) {
+    if (e.target.matches('.condition-is-wound')) {
+      var card = e.target.closest('.condition-card');
+      card.classList.toggle('condition-is-wound-active', e.target.checked);
+      _onUpdate();
+      return;
+    }
     if (e.target.matches('.condition-type')) {
       var card    = e.target.closest('.condition-card');
       var type    = e.target.value;

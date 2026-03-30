@@ -1244,27 +1244,6 @@ hr {
 
 /* ─── Conditions ─────────────────────────────────────────── */
 
-.wounded-label {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 0;
-  text-transform: none;
-  letter-spacing: 0;
-  cursor: pointer;
-  user-select: none;
-}
-
-.wounded-label input[type='checkbox'] {
-  accent-color: var(--color-danger);
-  width: 0.9rem;
-  height: 0.9rem;
-  cursor: pointer;
-  flex-shrink: 0;
-}
 
 #conditions-list {
   display: flex;
@@ -1280,11 +1259,14 @@ hr {
 
 .condition-type {
   font-size: 0.78rem;
-  flex-shrink: 0;
+  flex: 0 0 9.5rem;
+  width: 9.5rem;
+  min-width: 0;
 }
 
 .condition-row-no-detail .condition-type {
   flex: 1;
+  width: auto;
 }
 
 .condition-detail {
@@ -1331,7 +1313,59 @@ hr {
   gap: 0.4rem;
 }
 
-/* ─── Text utilities ──────────────────────────────────────── */
+/* ─── Wound toggle (on condition cards) ──────────────────── */
+
+.condition-wound-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.condition-wound-toggle input[type='checkbox'] {
+  accent-color: var(--color-danger);
+  width: 0.75rem;
+  height: 0.75rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.condition-is-wound-active .condition-wound-toggle {
+  color: var(--color-danger);
+}
+
+/* ─── Wound pips (in Strain section) ─────────────────────── */
+
+.wound-track {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wound-status {
+  margin-top: 0;
+  margin-left: 0.25rem;
+}
+
+.wound-pip {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-muted);
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.wound-pip-active {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+}
 
 /* ─── Active Abilities ──────────────────────────────────── */
 

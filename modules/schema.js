@@ -91,6 +91,7 @@ const Schema = (() => {
     escalating:         { label: 'Escalating',          hasDetail: true,  detailPlaceholder: 'e.g. Burning, Bleeding', description: 'Loses strain equal to condition value each round' },
     sensoryDeprivation: { label: 'Sensory Deprivation', hasDetail: true,  detailPlaceholder: 'e.g. Sight, Hearing',   description: 'Blocks senses equal to strain value; rolls using blocked senses lose a die' },
     slowed:             { label: 'Slowed',              hasDetail: false, description: 'Stride reduced by strain value' },
+    custom:             { label: 'Custom',              hasDetail: true,  detailPlaceholder: 'Condition name',         description: 'A custom condition' },
   };
 
   const MAX_ACTIVE_ABILITIES = 20;
@@ -336,7 +337,6 @@ const Schema = (() => {
         { rank: 4, name: '', polarities: [] },
       ],
       strain:           { current: 0, xpInvested: 0 },
-      wounded:          false,
       conditions:       [],
       armor: {
         head:      { as: 0, absorbed: 0 },

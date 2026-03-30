@@ -159,14 +159,10 @@
       <section class="sheet-section" id="section-conditions">
         <div class="section-heading">
           <h2>Conditions</h2>
-          <label class="wounded-label">
-            <input type="checkbox" id="check-wounded">
-            Wounded
-          </label>
+          <button class="btn btn-sm" id="btn-add-condition" type="button">+ Condition</button>
         </div>
 
         <div id="conditions-list"></div>
-        <button class="polarity-add-btn mt-sm" id="btn-add-condition" type="button">+ Condition</button>
       </section>
 
       <div class="armor-strain-row">
@@ -205,9 +201,6 @@
               </div>
             </div>
 
-            <div class="warning" id="strain-unconscious-warning" hidden>Unconscious — not wounded</div>
-            <div class="warning" id="strain-dying-warning" hidden>Dying — allies have 1 round to stabilize</div>
-
             <div class="cols-2 mt-md">
               <div class="field">
                 <label for="select-strain-xp">XP Invested</label>
@@ -223,6 +216,17 @@
               <div class="field">
                 <label>Strain Max</label>
                 <span class="derived" id="strain-max-derived">4</span>
+              </div>
+            </div>
+
+            <div class="field mt-sm">
+              <label>Wounds</label>
+              <div class="wound-track">
+                <span class="wound-pip" id="wound-pip-1"></span>
+                <span class="wound-pip" id="wound-pip-2"></span>
+                <span class="wound-pip" id="wound-pip-3"></span>
+                <span class="warning wound-status" id="strain-unconscious-warning" hidden>Unconscious</span>
+                <span class="warning wound-status" id="strain-dying-warning" hidden>Dead</span>
               </div>
             </div>
           </section>
