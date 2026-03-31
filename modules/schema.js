@@ -98,12 +98,102 @@ const Schema = (() => {
 
   const FAVOR_TYPES = ['Local Faction', 'Personal', 'Organizational'];
 
-  const PASSIVE_ABILITY_NAMES = [
-    'Circulation', 'Resistant', 'Juggernaut', 'Advanced Awareness', 'Stability',
-    'Advanced Sense', 'Never at Loss', 'Armored Aura', 'Freedom of Movement',
-    'Unconstrained Mind', 'Focused Execution', 'Undetected Awareness', 'Buildup',
-    'No Damage, All Condition', 'Shared Assurance', 'Self-Sustaining Summons',
-    'All Condition, No Strain', 'Item Proficiency',
+  const FAVOR_STATUSES = [
+    { value: 'Good terms, good health',        label: 'Good terms, good health' },
+    { value: 'They hate you, but in good health', label: 'They hate you, but in good health' },
+    { value: 'Far away by choice',             label: 'Far away by choice' },
+    { value: 'Addiction',                      label: 'Addiction' },
+    { value: 'Crippled',                       label: 'Crippled' },
+    { value: 'Taken or disappeared',           label: 'Taken or disappeared' },
+    { value: 'Ruined or debt-bound',           label: 'Ruined or debt-bound' },
+    { value: 'Broken mind',                    label: 'Broken mind' },
+    { value: 'Imprisoned',                     label: 'Imprisoned' },
+    { value: 'Killed in war',                  label: 'Killed in war' },
+    { value: 'Fatal accident or disease',      label: 'Fatal accident or disease' },
+    { value: 'Murdered, killer unknown',       label: 'Murdered, killer unknown' },
+    { value: 'Murdered, you know who',         label: 'Murdered, you know who' },
+    { value: 'You caused their death',         label: 'You caused their death' },
+  ];
+
+  const FAVOR_FACTION_STATUSES = [
+    { value: 'Tolerated',          label: 'Tolerated — your presence is permitted, not welcomed' },
+    { value: 'Hunted',             label: 'Hunted — openly pursued by this faction' },
+    { value: 'Secretly Hunted',    label: 'Secretly Hunted — they pursue you without your knowledge' },
+    { value: 'Protected',          label: 'Protected — they shelter you from outside threats' },
+    { value: 'Secretly Protected', label: 'Secretly Protected — protection is real but not acknowledged' },
+    { value: 'Sponsored',          label: 'Sponsored — they support you; return is expected' },
+    { value: 'Secretly Sponsored', label: 'Secretly Sponsored — support flows quietly; strings attached' },
+    { value: 'Watched',            label: 'Watched — they monitor you without committing either way' },
+    { value: 'Independent',        label: 'Independent — no formal ties, no protection' },
+    { value: 'Affiliated',         label: 'Affiliated — cooperative, no obligation' },
+    { value: 'Secretly Affiliated',label: 'Secretly Affiliated — you work together; the connection is concealed' },
+    { value: 'Agent',              label: 'Agent — sent to act on their behalf' },
+    { value: 'Secretly an Agent',  label: 'Secretly an Agent — you act for them; your role is hidden' },
+    { value: 'Bound',              label: 'Bound — you owe a debt and cannot freely leave' },
+    { value: 'Secretly Bound',     label: 'Secretly Bound — a hidden obligation holds you' },
+    { value: 'Member',             label: 'Member — you belong and operate under their rules' },
+    { value: 'Secretly a Member',  label: 'Secretly a Member — full membership, concealed from outsiders' },
+  ];
+
+  const REN_TEXTURES = {
+    Tranquil: {
+      label:          'Tranquil',
+      description:    'Smooth, stable Ren. Rarely produces boons or complications.',
+      boons:          'Min only',
+      complications:  'Max only',
+    },
+    Volatile: {
+      label:          'Volatile',
+      description:    'Unstable but functional. Moderate boon and complication frequency.',
+      boons:          'Min, Min+1',
+      complications:  'Max\u22121, Max',
+    },
+    Rampant: {
+      label:          'Rampant',
+      description:    'Swingy and unruly. Produces boons and complications frequently.',
+      boons:          'Min, Min+1, Min+2',
+      complications:  'Max\u22122, Max\u22121, Max',
+    },
+  };
+
+  const DAMAGE_TYPES = [
+    { name: 'Heat',     desc: 'Fire, heat, lasers, light — anything from being too hot.' },
+    { name: 'Cold',     desc: 'Ice, freezing, and all chilling sources.' },
+    { name: 'Electric', desc: 'Electricity and shocking effects.' },
+    { name: 'Decay',    desc: 'Poisons, diseases, withering.' },
+    { name: 'Mental',   desc: 'Emotional distress, mind tricks, psychic attacks.' },
+    { name: 'Sharp',    desc: 'Piercing and slashing, including telekinetic cuts.' },
+    { name: 'Blunt',    desc: 'Impacts, falls, clubs, and blunt telekinesis.' },
+    { name: 'Physical', desc: 'Covers both Sharp and Blunt damage.',             covers: ['Sharp', 'Blunt'],                            xpPerLevel: 2 },
+    { name: 'Ren',      desc: 'Covers any Ren-sourced damage type.',             covers: ['Heat', 'Cold', 'Electric', 'Decay', 'Mental'], xpPerLevel: 5 },
+    { name: 'Divine',   desc: 'Existential "holy" damage; may appear as another type.' },
+    { name: 'Void',     desc: 'Inexistence, null, entropic damage.' },
+    { name: 'Profane',  desc: 'Existential "unholy" damage; may appear as another type.' },
+  ];
+
+  // costType: 'flat' = 1 XP once; 'leveled' = 1 XP per level; 'multi-instance' = 1 XP per instance (different target each time)
+  // maxLevel: null means no cap
+  const PASSIVE_ABILITIES = [
+    { name: 'Resistant',               costType: 'leveled',        maxLevel: null },
+    { name: 'Juggernaut',              costType: 'flat',           maxLevel: 1    },
+    { name: 'Advanced Awareness',      costType: 'leveled',        maxLevel: null },
+    { name: 'Stability',               costType: 'leveled',        maxLevel: null },
+    { name: 'Advanced Sense',          costType: 'multi-instance', maxLevel: 1    },
+    { name: 'Never at Loss',           costType: 'flat',           maxLevel: 1    },
+    { name: 'Armored Aura',            costType: 'leveled',        maxLevel: null },
+    { name: 'Freedom of Movement',     costType: 'flat',           maxLevel: 1    },
+    { name: 'Unconstrained Mind',      costType: 'flat',           maxLevel: 1    },
+    { name: 'Focused Execution',       costType: 'flat',           maxLevel: 1    },
+    { name: 'Undetected Awareness',    costType: 'multi-instance', maxLevel: 1    },
+    { name: 'Buildup',                 costType: 'flat',           maxLevel: 1    },
+    { name: 'Shared Assurance',        costType: 'flat',           maxLevel: 1    },
+    { name: 'Item Proficiency',        costType: 'leveled',        maxLevel: 5    },
+    { name: 'Invigorated',             costType: 'flat',           maxLevel: 1    },
+    { name: 'Polarity Attunement',     costType: 'multi-instance', maxLevel: 1    },
+    { name: 'No Wound, All Condition', costType: 'flat',           maxLevel: 1    },
+    { name: 'Compounding',             costType: 'flat',           maxLevel: 1    },
+    { name: 'Relentless Application',  costType: 'flat',           maxLevel: 1    },
+    { name: 'Unmeasured Response',     costType: 'leveled',        maxLevel: 5    },
   ];
 
   // Theridim (Emergence) unlocks when all 7 base lineages are present.
@@ -291,6 +381,10 @@ const Schema = (() => {
     return 2 + realm;
   }
 
+  function calcCarryWeight(xpInvested) {
+    return 6 + xpInvested * 2;
+  }
+
   function calcAbilityStrainCost(ability) {
     const intents = ability.intents ?? [];
     const intentStrain = intents.reduce((sum, key) => {
@@ -309,13 +403,21 @@ const Schema = (() => {
 
   function calcXpSpent(character) {
     const strainXp    = (character.strain    || {}).xpInvested ?? 0;
-    const strideXp    = (character.stride    || {}).xpInvested ?? 0;
+    const strideXp       = (character.stride       || {}).xpInvested ?? 0;
+    const carryWeightXp  = (character.carryWeight  || {}).xpInvested ?? 0;
     const awarenessXp = (character.awareness || {}).xpInvested ?? 0;
     const lineageXp   = ((character.identity || {}).lineages ?? [])
       .reduce((sum, l) => sum + (l.level ?? 0), 0);
     const passiveXp   = (character.passiveAbilities ?? [])
-      .reduce((sum, p) => sum + (p.level ?? 0), 0);
-    return strainXp + strideXp + awarenessXp + lineageXp + passiveXp;
+      .reduce((sum, p) => {
+        if (p.name === 'Resistant') {
+          const dt   = DAMAGE_TYPES.find(d => d.name === p.notes);
+          const mult = dt ? (dt.xpPerLevel || 1) : 1;
+          return sum + (p.level ?? 0) * mult;
+        }
+        return sum + (p.level ?? 0);
+      }, 0);
+    return strainXp + strideXp + carryWeightXp + awarenessXp + lineageXp + passiveXp;
   }
 
   // ─── ID generation ─────────────────────────────────────────
@@ -331,10 +433,10 @@ const Schema = (() => {
       meta:     { schemaVersion: 1, lastSaved: null },
       identity: { name: '', lineages: [], realm: 0, xpTotal: 0 },
       values: [
-        { rank: 1, name: '', polarities: [] },
-        { rank: 2, name: '', polarities: [] },
-        { rank: 3, name: '', polarities: [] },
-        { rank: 4, name: '', polarities: [] },
+        { rank: 1, name: '', polarities: [], experiences: [] },
+        { rank: 2, name: '', polarities: [], experiences: [] },
+        { rank: 3, name: '', polarities: [], experiences: [] },
+        { rank: 4, name: '', polarities: [], experiences: [] },
       ],
       strain:           { current: 0, xpInvested: 0 },
       conditions:       [],
@@ -349,10 +451,27 @@ const Schema = (() => {
         environmental: { hot: false, cold: false, decay: false, electric: false },
       },
       stride:           { xpInvested: 0 },
+      carryWeight:      { xpInvested: 0 },
       awareness:        { xpInvested: 0, state: 'suppressed' },
       activeAbilities:  [],
       passiveAbilities: [],
       favor:            [],
+      renTexture:       'Tranquil',
+      weapons:          [],
+      ammo:             { text: '', used: 0, max: 0 },
+      background: {
+        firstRenMoment:           '',
+        territoryRaisedIn:        '',
+        environmentRaisedIn:      '',
+        upbringing:               '',
+        primaryCaretakerBackground: '',
+        whyLearnedRen:            '',
+        howLearnedRen:            '',
+        adventures:               '',
+        backstory:                '',
+      },
+      trinkets:         [],
+      money:            '',
       notes:            '',
     };
   }
@@ -362,10 +481,11 @@ const Schema = (() => {
   return {
     LINEAGES, REALM_NAMES, ARMOR_MATERIALS, HIT_LOCATIONS,
     INTENTS, ABILITY_AWARENESS, DURATIONS, CONDITIONS, MAX_ACTIVE_ABILITIES,
-    FAVOR_TYPES, PASSIVE_ABILITY_NAMES, LINEAGE_POLARITIES,
+    FAVOR_TYPES, FAVOR_STATUSES, FAVOR_FACTION_STATUSES, PASSIVE_ABILITIES, DAMAGE_TYPES, LINEAGE_POLARITIES,
+    REN_TEXTURES,
     VALUE_RANK_DIE, BASELINE_VALUES, POLARITIES_BY_CATEGORY,
     LINEAGE_POLARITY_DIE, STANDARD_XP_DIE,
-    calcStrainMax, calcStride, calcAwarenessRange, calcStartingFavor,
+    calcStrainMax, calcStride, calcAwarenessRange, calcStartingFavor, calcCarryWeight,
     calcAbilityStrainCost, calcXpSpent,
     newId, blankCharacter,
   };

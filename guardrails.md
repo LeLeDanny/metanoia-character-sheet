@@ -147,6 +147,7 @@ The following values are derived from other fields and must be calculated by the
 - Ability free threshold: free if Strain Cost <= character Realm
 - Stride: `2 + XP invested in Stride`
 - Starting Favor pool: `2 + Realm`
+- Carry Weight slots: `6 + (XP invested in Carry Weight × 2)`
 
 Do not ask the user to enter these manually. Surface both the inputs and the derived result.
 

@@ -20,6 +20,13 @@ function mergeFromModules() {
   Object.assign(character, Strain.read());
   Object.assign(character, Conditions.read());
   Object.assign(character, ActiveAbilities.read());
+  Object.assign(character, PassiveAbilities.read());
+  Object.assign(character, Favor.read());
+  Object.assign(character, RenTexture.read());
+  Object.assign(character, Weapons.read());
+  Object.assign(character, Trinkets.read());
+  Object.assign(character, Background.read());
+  Object.assign(character, Notes.read());
 }
 
 function renderModules() {
@@ -31,6 +38,13 @@ function renderModules() {
   Strain.render(character);
   Conditions.render(character);
   ActiveAbilities.render(character);
+  PassiveAbilities.render(character);
+  Favor.render(character);
+  RenTexture.render(character);
+  Weapons.render(character);
+  Trinkets.render(character);
+  Background.render(character);
+  Notes.render(character);
 }
 
 // ─── Unsaved indicator ────────────────────────────────────────
@@ -62,6 +76,22 @@ function handleLoad(loaded) {
   renderModules();
   setDirty(false);
 }
+
+// ─── Backstory / Notes modals (placeholders) ──────────────────
+
+['backstory', 'notes'].forEach(function(name) {
+  document.getElementById('btn-open-' + name).addEventListener('click', function() {
+    document.getElementById(name + '-modal').hidden = false;
+  });
+  document.getElementById('btn-' + name + '-modal-close').addEventListener('click', function() {
+    document.getElementById(name + '-modal').hidden = true;
+  });
+  document.getElementById(name + '-modal').addEventListener('click', function(e) {
+    if (e.target === document.getElementById(name + '-modal')) {
+      document.getElementById(name + '-modal').hidden = true;
+    }
+  });
+});
 
 // ─── Theme ────────────────────────────────────────────────────
 
@@ -104,6 +134,13 @@ Stride.init(onUpdate);
 Armor.init(onUpdate);
 Strain.init(onUpdate);
 Conditions.init(onUpdate);
+Favor.init(onUpdate);
+Weapons.init(onUpdate);
+RenTexture.init(onUpdate);
+Trinkets.init(onUpdate);
+PassiveAbilities.init(onUpdate);
+Background.init(onUpdate);
+Notes.init(onUpdate);
 ActiveAbilities.init(onUpdate, function(cost) {
   var strainMax = Schema.calcStrainMax(
     (character.identity || {}).realm || 0,

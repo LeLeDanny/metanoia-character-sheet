@@ -16,6 +16,11 @@
       <span class="app-title">Metanoia</span>
       <span class="app-subtitle">Character Sheet</span>
     </div>
+    <div class="header-nav">
+      <button class="btn" id="btn-open-backstory">Backstory</button>
+      <button class="btn" id="btn-open-notes">Notes</button>
+      <button class="btn" id="btn-open-trinkets">Trinkets</button>
+    </div>
     <div class="header-controls">
       <span class="unsaved-dot" id="unsaved-dot" hidden aria-label="Unsaved changes">●</span>
       <button class="btn" id="btn-new">New</button>
@@ -120,14 +125,40 @@
       </div>
 
       <div class="sheet-stack">
+      <section class="sheet-section" id="section-ren-texture">
+        <div class="section-heading">
+          <h2>Ren Texture</h2>
+          <button class="btn btn-sm" id="btn-ren-texture-ref" aria-label="Ren Texture reference">?</button>
+        </div>
+        <div class="field">
+          <label for="select-ren-texture">Texture</label>
+          <select id="select-ren-texture">
+            <option value="Tranquil">Tranquil</option>
+            <option value="Volatile">Volatile</option>
+            <option value="Rampant">Rampant</option>
+          </select>
+        </div>
+        <div class="cols-2 mt-sm">
+          <div class="field">
+            <label>Boons</label>
+            <span class="derived" id="ren-texture-boons">Min only</span>
+          </div>
+          <div class="field">
+            <label>Complications</label>
+            <span class="derived" id="ren-texture-complications">Max only</span>
+          </div>
+        </div>
+      </section>
+
       <section class="sheet-section" id="section-stride">
         <div class="section-heading">
-          <h2>Stride</h2>
+          <h2>Stride &amp; Carry Weight</h2>
           <button class="btn btn-sm" id="btn-stride-ref" aria-label="Range bands reference">?</button>
         </div>
-        <div class="cols-2">
-          <div class="field">
-            <label for="select-stride-xp">XP Invested</label>
+        <div class="stride-grid">
+          <div class="inline-fields">
+            <label>Stride</label>
+            <label for="select-stride-xp">XP</label>
             <select id="select-stride-xp">
               <option value="0">0</option>
               <option value="1">1</option>
@@ -136,10 +167,22 @@
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
-          </div>
-          <div class="field">
-            <label>Stride</label>
             <span class="derived" id="stride-value">2</span>
+            <span></span>
+          </div>
+          <div class="inline-fields">
+            <label>Carry Weight</label>
+            <label for="select-carry-weight-xp">XP</label>
+            <select id="select-carry-weight-xp">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+            <span class="derived" id="carry-weight-value">6</span>
+            <span class="field-unit">slots</span>
           </div>
         </div>
       </section>
@@ -156,15 +199,6 @@
     </div>
 
     <div class="sheet-col">
-      <section class="sheet-section" id="section-conditions">
-        <div class="section-heading">
-          <h2>Conditions</h2>
-          <button class="btn btn-sm" id="btn-add-condition" type="button">+ Condition</button>
-        </div>
-
-        <div id="conditions-list"></div>
-      </section>
-
       <div class="armor-strain-row">
         <section class="sheet-section" id="section-armor">
           <div class="section-heading">
@@ -186,92 +220,393 @@
           </table>
         </section>
 
-        <div class="strain-env-col">
-          <section class="sheet-section" id="section-strain">
-            <h2>Strain</h2>
+        <section class="sheet-section" id="section-strain">
+          <h2>Strain</h2>
 
+          <div class="field">
+            <label>Strain Taken</label>
+            <div class="strain-tracker">
+              <button class="btn strain-step-btn" id="btn-strain-minus">−</button>
+              <input type="number" id="input-strain-current" class="strain-current-input" min="0">
+              <span class="strain-sep">/</span>
+              <span class="strain-max" id="strain-max">4</span>
+              <button class="btn strain-step-btn" id="btn-strain-plus">+</button>
+            </div>
+          </div>
+
+          <div class="cols-2 mt-md">
             <div class="field">
-              <label>Strain Taken</label>
-              <div class="strain-tracker">
-                <button class="btn strain-step-btn" id="btn-strain-minus">−</button>
-                <input type="number" id="input-strain-current" class="strain-current-input" min="0">
-                <span class="strain-sep">/</span>
-                <span class="strain-max" id="strain-max">4</span>
-                <button class="btn strain-step-btn" id="btn-strain-plus">+</button>
-              </div>
+              <label for="select-strain-xp">XP Invested</label>
+              <select id="select-strain-xp">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
             </div>
+            <div class="field">
+              <label>Strain Max</label>
+              <span class="derived" id="strain-max-derived">4</span>
+            </div>
+          </div>
 
-            <div class="cols-2 mt-md">
-              <div class="field">
-                <label for="select-strain-xp">XP Invested</label>
-                <select id="select-strain-xp">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Strain Max</label>
-                <span class="derived" id="strain-max-derived">4</span>
-              </div>
+          <div class="field mt-sm">
+            <label>Wounds</label>
+            <div class="wound-track">
+              <span class="wound-pip" id="wound-pip-1"></span>
+              <span class="wound-pip" id="wound-pip-2"></span>
+              <span class="wound-pip" id="wound-pip-3"></span>
+              <span class="wound-pip" id="wound-pip-4" hidden></span>
+              <span class="warning wound-status" id="strain-unconscious-warning" hidden>Unconscious</span>
+              <span class="warning wound-status" id="strain-dying-warning" hidden>Dead</span>
             </div>
-
-            <div class="field mt-sm">
-              <label>Wounds</label>
-              <div class="wound-track">
-                <span class="wound-pip" id="wound-pip-1"></span>
-                <span class="wound-pip" id="wound-pip-2"></span>
-                <span class="wound-pip" id="wound-pip-3"></span>
-                <span class="warning wound-status" id="strain-unconscious-warning" hidden>Unconscious</span>
-                <span class="warning wound-status" id="strain-dying-warning" hidden>Dead</span>
-              </div>
-            </div>
-          </section>
-
-          <section class="sheet-section" id="section-env">
-            <h2>Env. Protection</h2>
-            <div class="armor-env-checks">
-              <label class="armor-env-label"><input type="checkbox" id="armor-env-hot"> Hot</label>
-              <label class="armor-env-label"><input type="checkbox" id="armor-env-cold"> Cold</label>
-              <label class="armor-env-label"><input type="checkbox" id="armor-env-decay"> Decay</label>
-              <label class="armor-env-label"><input type="checkbox" id="armor-env-electric"> Electric</label>
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
+
+      <section class="sheet-section" id="section-env">
+        <h2>Environmental Protection</h2>
+        <div class="armor-env-checks">
+          <label class="armor-env-label"><input type="checkbox" id="armor-env-hot"> Hot</label>
+          <label class="armor-env-label"><input type="checkbox" id="armor-env-cold"> Cold</label>
+          <label class="armor-env-label"><input type="checkbox" id="armor-env-decay"> Decay</label>
+          <label class="armor-env-label"><input type="checkbox" id="armor-env-electric"> Electric</label>
+        </div>
+      </section>
+
+      <section class="sheet-section" id="section-conditions">
+        <div class="section-heading">
+          <h2>Conditions</h2>
+          <button class="btn btn-sm" id="btn-add-condition" type="button">+ Condition</button>
+        </div>
+
+        <div id="conditions-list"></div>
+      </section>
+
+      <section class="sheet-section" id="section-favor">
+        <div class="section-heading">
+          <h2>Favor</h2>
+          <button class="btn btn-sm" id="btn-favor-edit" type="button">Edit</button>
+        </div>
+        <p class="favor-pool-line">Starting pool: <span id="favor-starting-pool">2</span></p>
+        <div class="field mt-sm">
+          <label for="favor-current-faction">Current Faction</label>
+          <select id="favor-current-faction">
+            <option value="">— None —</option>
+          </select>
+        </div>
+        <div id="favor-summary-list"></div>
+      </section>
 
     </div>
 
     <div class="sheet-col">
+
+      <div class="weapons-ammo-pair">
+        <section class="sheet-section" id="section-weapons-summary">
+          <div class="section-heading">
+            <h2>Weapons</h2>
+            <button class="btn btn-sm" id="btn-open-equipment" type="button">Manage</button>
+          </div>
+          <select id="select-weapon-active" style="width:100%;margin-bottom:0.35rem">
+            <option value="">— None —</option>
+          </select>
+          <div id="weapon-active-detail"></div>
+        </section>
+
+        <section class="sheet-section" id="section-ammo">
+          <h2>Ammo</h2>
+          <input type="text" id="input-ammo-text" placeholder="e.g. Bodkin arrows" class="ammo-text-input mt-sm">
+          <div class="ammo-tracker mt-sm">
+            <input type="number" id="input-ammo-used" class="ammo-used-input" min="0" value="0">
+            <span class="strain-sep">/</span>
+            <input type="number" id="input-ammo-max" class="ammo-max-input" min="0" value="0">
+            <button class="btn btn-sm" id="btn-ammo-use" type="button">Use</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="sheet-section" id="section-passive-abilities">
+        <div class="section-heading">
+          <h2>Passive Abilities</h2>
+          <button class="btn btn-sm" id="btn-add-passive" type="button">+ Passive</button>
+        </div>
+        <div id="passives-list"></div>
+      </section>
+
       <section class="sheet-section" id="section-active-abilities">
         <div class="section-heading">
           <h2>Active Abilities</h2>
           <span class="ability-counter" id="ability-counter">0 / 20</span>
         </div>
         <div id="abilities-list"></div>
-        <button class="polarity-add-btn mt-sm" id="btn-add-ability" type="button">+ Ability</button>
+        <button class="config-add-btn mt-sm" id="btn-add-ability" type="button">+ Ability</button>
       </section>
 
-      <section class="sheet-section" id="section-passive-abilities">
-        <h2>Passive Abilities</h2>
-        <p class="placeholder">Permanent upgrades</p>
-      </section>
-
-      <section class="sheet-section" id="section-favor">
-        <h2>Favor</h2>
-        <p class="placeholder">Faction and personal standing</p>
-      </section>
-
-      <section class="sheet-section" id="section-notes">
-        <h2>Notes</h2>
-        <p class="placeholder">Free-text notes</p>
-      </section>
     </div>
 
   </main>
+
+  <!-- Equipment modal -->
+  <div class="modal-overlay" id="equipment-modal" hidden>
+    <div class="modal modal-wide">
+      <div class="modal-header">
+        <h3>Equipment</h3>
+        <button class="btn-icon" id="btn-equipment-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <div class="section-heading">
+          <h2>Weapons</h2>
+          <button class="btn btn-sm" id="btn-add-weapon" type="button">+ Weapon</button>
+        </div>
+        <div id="weapons-editor-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="btn-equipment-modal-done" type="button">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backstory modal -->
+  <div class="modal-overlay" id="backstory-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Backstory</h3>
+        <button class="btn-icon" id="btn-backstory-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <div id="bg-fields">
+          <div class="field">
+            <label for="bg-first-ren-moment">What caused you to first feel Ren?</label>
+            <textarea id="bg-first-ren-moment" rows="2" placeholder="The moment Ren first stirred in you..."></textarea>
+          </div>
+          <div class="cols-2 mt-sm">
+            <div class="field">
+              <label for="bg-territory">Territory Raised In</label>
+              <input type="text" id="bg-territory" placeholder="e.g. The Hollow Reaches">
+            </div>
+            <div class="field">
+              <label for="bg-environment">Environment Raised In</label>
+              <input type="text" id="bg-environment" placeholder="e.g. Rural, Urban, Wilderness">
+            </div>
+          </div>
+          <div class="field mt-sm">
+            <label for="bg-upbringing">Upbringing</label>
+            <textarea id="bg-upbringing" rows="2" placeholder="How you were raised..."></textarea>
+          </div>
+          <div class="field mt-sm">
+            <label for="bg-caretaker">Primary Caretaker's Background</label>
+            <textarea id="bg-caretaker" rows="2" placeholder="Who raised you, and what was their life..."></textarea>
+          </div>
+          <div class="cols-2 mt-sm">
+            <div class="field">
+              <label for="bg-why-ren">Why you learned Ren</label>
+              <textarea id="bg-why-ren" rows="2" placeholder="Your motivation..."></textarea>
+            </div>
+            <div class="field">
+              <label for="bg-how-ren">How you learned Ren</label>
+              <textarea id="bg-how-ren" rows="2" placeholder="Your path to learning..."></textarea>
+            </div>
+          </div>
+          <div class="field mt-sm">
+            <label for="bg-adventures">Adventures</label>
+            <textarea id="bg-adventures" rows="4" placeholder="Pre-play missions and ordeals already survived..."></textarea>
+          </div>
+          <div class="cols-2 mt-sm">
+            <div class="field">
+              <label for="bg-fears">Fears</label>
+              <textarea id="bg-fears" rows="4" placeholder="What your character fears..."></textarea>
+            </div>
+            <div class="field">
+              <label for="bg-goals">Goals</label>
+              <textarea id="bg-goals" rows="4" placeholder="What your character wants..."></textarea>
+            </div>
+          </div>
+          <div class="field mt-sm">
+            <label for="bg-backstory">Backstory</label>
+            <textarea id="bg-backstory" rows="8" placeholder="Your character's history..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes modal -->
+  <div class="modal-overlay" id="notes-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Notes</h3>
+        <button class="btn-icon" id="btn-notes-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="notes-textarea" rows="16" placeholder="Appearance, session notes, miscellaneous details..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trinkets & Items modal -->
+  <div class="modal-overlay" id="trinkets-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Trinkets &amp; Items</h3>
+        <button class="btn-icon" id="btn-trinkets-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="input-money">Money</label>
+          <input type="text" id="input-money" placeholder="e.g. 4 silver, 12 copper">
+        </div>
+        <div class="section-heading mt-md">
+          <h2>Trinkets</h2>
+          <button class="btn btn-sm" id="btn-add-trinket" type="button">+ Trinket</button>
+        </div>
+        <div id="trinkets-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favor modal -->
+  <div class="modal-overlay" id="favor-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Favor</h3>
+        <button class="btn-icon" id="btn-favor-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Starting pool: <strong id="favor-modal-pool">2</strong> (2 + Realm). You can take &minus;1 on one relationship to gain +1 elsewhere.</p>
+        <div id="favor-modal-list"></div>
+        <button class="config-add-btn mt-sm" id="btn-add-favor" type="button">+ Favor</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary" id="btn-favor-modal-done" type="button">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Passive Ability add/edit modal -->
+  <div class="modal-overlay" id="passive-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="passive-modal-title">Add Passive Ability</h3>
+        <button class="btn-icon" id="btn-passive-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field" id="passive-modal-name-row">
+          <label for="passive-modal-name-select">Ability</label>
+          <select id="passive-modal-name-select"></select>
+        </div>
+        <div class="field mt-sm" id="passive-modal-custom-wrap" hidden>
+          <label for="passive-modal-name-custom">Custom Name</label>
+          <input type="text" id="passive-modal-name-custom" placeholder="Ability name">
+        </div>
+        <div id="passive-modal-content" class="mt-md"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btn-passive-modal-cancel" type="button">Cancel</button>
+        <button class="btn-primary" id="btn-passive-modal-save" type="button">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ren Texture reference modal -->
+  <div class="modal-overlay" id="ren-texture-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Ren Texture</h3>
+        <button class="btn-icon" id="btn-ren-texture-modal-close" type="button" aria-label="Close">&#215;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Texture describes the stability of a character's Ren circulation. It determines how frequently dice trigger Boons and Complications. Triggers are per-die, based on that die's own face values.</p>
+        <table class="ren-texture-ref-table mt-sm">
+          <thead>
+            <tr>
+              <th>Texture</th>
+              <th>Boon Triggers</th>
+              <th>Complication Triggers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tranquil</td>
+              <td>Min only</td>
+              <td>Max only</td>
+            </tr>
+            <tr>
+              <td>Volatile</td>
+              <td>Min, Min+1</td>
+              <td>Max&minus;1, Max</td>
+            </tr>
+            <tr>
+              <td>Rampant</td>
+              <td>Min, Min+1, Min+2</td>
+              <td>Max&minus;2, Max&minus;1, Max</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="modal-note mt-sm modal-subheading">On a d8</p>
+        <table class="ren-texture-ref-table">
+          <thead>
+            <tr>
+              <th>Texture</th>
+              <th>Boons</th>
+              <th>Complications</th>
+              <th>Neutral</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tranquil</td>
+              <td>1</td>
+              <td>8</td>
+              <td>2&ndash;7</td>
+            </tr>
+            <tr>
+              <td>Volatile</td>
+              <td>1&ndash;2</td>
+              <td>7&ndash;8</td>
+              <td>3&ndash;6</td>
+            </tr>
+            <tr>
+              <td>Rampant</td>
+              <td>1&ndash;3</td>
+              <td>6&ndash;8</td>
+              <td>4&ndash;5</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="modal-note mt-sm modal-subheading">d4 exception: Rampant</p>
+        <p class="modal-note">Rampant's trigger bands overlap on 2 and 3. Each contested value resolves to one side, and the displaced trigger stacks onto the opposite extreme.</p>
+        <table class="ren-texture-ref-table mt-sm">
+          <thead>
+            <tr>
+              <th>Roll</th>
+              <th>Effect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Boon, Boon</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Boon</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Complication</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Complication, Complication</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <!-- Load modules in dependency order before the orchestrator -->
   <script src="modules/schema.js"></script>
@@ -284,7 +619,15 @@
   <script src="modules/strain.js"></script>
   <script src="modules/conditions.js"></script>
   <script src="modules/activeAbilities.js"></script>
+  <script src="modules/passiveAbilities.js"></script>
+  <script src="modules/favor.js"></script>
+  <script src="modules/renTexture.js"></script>
+  <script src="modules/weapons.js"></script>
+  <script src="modules/trinkets.js"></script>
+  <script src="modules/background.js"></script>
+  <script src="modules/notes.js"></script>
   <script src="app.js"></script>
   <div class="snackbar" id="snackbar"></div>
+
 </body>
 </html>

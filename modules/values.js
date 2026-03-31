@@ -1,10 +1,23 @@
 // values.js
-// Manages the Values section (including nested polarities). Exposes a single global: Values
+// Manages the Values section. Polarities and experiences are edited in a per-value config modal.
+// Exposes a single global: Values
 // Relies on globals: Schema (loaded before this module in index.html)
 
 const Values = (() => {
 
   let _onUpdate = null;
+
+  // Source of truth for polarities and experiences, indexed by row position (0–3).
+  // Value names live in the row DOM inputs.
+  let _valueData = [
+    { polarities: [], experiences: [] },
+    { polarities: [], experiences: [] },
+    { polarities: [], experiences: [] },
+    { polarities: [], experiences: [] },
+  ];
+
+  // Index of the value currently open in the config modal, or null.
+  let _configIdx = null;
 
   const DIES = ['d4', 'd6', 'd8', 'd10'];
 
@@ -12,7 +25,8 @@ const Values = (() => {
 
   function init(onUpdate) {
     _onUpdate = onUpdate;
-    buildModal();
+    buildRefModal();
+    buildConfigModal();
     buildRows();
     setupListeners();
   }
@@ -22,36 +36,41 @@ const Values = (() => {
     const rows   = Array.from(document.querySelectorAll('#values-list .value-row'));
 
     rows.forEach((row, i) => {
-      const v     = sorted[i] || { name: '', polarities: [] };
+      const v     = sorted[i] || { name: '', polarities: [], experiences: [] };
       const input = row.querySelector('.value-name-input');
       if (document.activeElement !== input) input.value = v.name || '';
-      reconcilePolarities(row, v.polarities || []);
+
+      // Skip the value currently open in the config modal — its live DOM is the source of truth.
+      if (i !== _configIdx) {
+        _valueData[i] = {
+          polarities:  (v.polarities  || []).map(p => ({ ...p })),
+          experiences: (v.experiences || []).map(e => ({ ...e })),
+        };
+      }
+
+      updateSummary(row, i);
     });
 
     updateRankLabels();
   }
 
   function read() {
+    if (_configIdx !== null) syncModalToData();
+
     const rows = document.querySelectorAll('#values-list .value-row');
     const values = [];
     rows.forEach((row, i) => {
-      const polarities = [];
-      row.querySelectorAll('.polarity-row').forEach(pr => {
-        polarities.push({
-          id:   pr.dataset.id,
-          name: pr.querySelector('.polarity-name-input').value.trim(),
-        });
-      });
       values.push({
-        rank:      i + 1,
-        name:      row.querySelector('.value-name-input').value.trim(),
-        polarities,
+        rank:        i + 1,
+        name:        row.querySelector('.value-name-input').value.trim(),
+        polarities:  _valueData[i].polarities,
+        experiences: _valueData[i].experiences,
       });
     });
     return { values };
   }
 
-  // ─── Build ────────────────────────────────────────────────────
+  // ─── Main rows ────────────────────────────────────────────────
 
   function buildRows() {
     const list = document.getElementById('values-list');
@@ -60,10 +79,10 @@ const Values = (() => {
   }
 
   function buildValueRow() {
-    const row      = document.createElement('div');
-    row.className  = 'value-row';
-    row.draggable  = true;
-    row.innerHTML  = `
+    const row     = document.createElement('div');
+    row.className = 'value-row';
+    row.draggable = true;
+    row.innerHTML = `
       <div class="value-header">
         <span class="drag-handle" aria-hidden="true">⠿</span>
         <div class="value-move-btns">
@@ -73,22 +92,9 @@ const Values = (() => {
         <span class="value-rank-label"></span>
         <input type="text" class="value-name-input" placeholder="Enter value">
         <span class="value-die"></span>
+        <button class="value-config-btn" type="button" aria-label="Configure polarities and experiences">⚙</button>
       </div>
-      <div class="polarity-group">
-        <div class="polarity-list"></div>
-        <button class="polarity-add-btn" type="button">+ Polarity</button>
-      </div>
-    `;
-    return row;
-  }
-
-  function buildPolarityRow(id) {
-    const row      = document.createElement('div');
-    row.className  = 'polarity-row';
-    row.dataset.id = id;
-    row.innerHTML  = `
-      <input type="text" class="polarity-name-input" placeholder="Polarity name">
-      <button class="polarity-delete-btn btn-icon" type="button" aria-label="Remove polarity">×</button>
+      <div class="value-summary"></div>
     `;
     return row;
   }
@@ -101,47 +107,203 @@ const Values = (() => {
     });
   }
 
-  // ─── Polarity reconcile ───────────────────────────────────────
+  function updateSummary(row, idx) {
+    const summary = row.querySelector('.value-summary');
+    const data    = _valueData[idx];
+    const names   = data.polarities.filter(p => p.name).map(p => p.name);
+    const exps    = data.experiences.filter(e => e.description).map(e => e.description);
 
-  function reconcilePolarities(valueRow, polarities) {
-    const container = valueRow.querySelector('.polarity-list');
-    const addBtn    = valueRow.querySelector('.polarity-add-btn');
-
-    // Index existing rows by ID
-    const existingRows = {};
-    container.querySelectorAll('.polarity-row').forEach(r => {
-      existingRows[r.dataset.id] = r;
-    });
-
-    const targetIds = new Set(polarities.map(p => p.id));
-
-    // Remove stale rows
-    Object.keys(existingRows).forEach(id => {
-      if (!targetIds.has(id)) existingRows[id].remove();
-    });
-
-    // Add / update / reorder
-    polarities.forEach((p, i) => {
-      let row = existingRows[p.id];
-      if (!row) row = buildPolarityRow(p.id);
-
-      const input = row.querySelector('.polarity-name-input');
-      if (document.activeElement !== input) input.value = p.name || '';
-
-      if (container.children[i] !== row) {
-        container.insertBefore(row, container.children[i] || null);
-      }
-    });
-
-    addBtn.disabled = polarities.length >= 4;
+    let html = '';
+    if (names.length) html += `<span class="summary-polarities">${names.join(', ')}</span>`;
+    if (exps.length)  html += `<span class="summary-experience">${exps.join(' | ')}</span>`;
+    summary.innerHTML = html;
   }
 
-  // ─── Listeners ────────────────────────────────────────────────
+  // ─── Config modal ─────────────────────────────────────────────
+
+  function buildConfigModal() {
+    const overlay     = document.createElement('div');
+    overlay.id        = 'value-config-modal';
+    overlay.className = 'modal-overlay';
+    overlay.hidden    = true;
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'value-config-title');
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="value-config-title"></h3>
+          <button class="btn-icon" id="btn-value-config-close" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="config-section">
+            <h4 class="config-section-title">Polarities</h4>
+            <div id="config-polarity-list" class="config-item-list"></div>
+            <button id="config-polarity-add" type="button" class="config-add-btn">+ Polarity</button>
+          </div>
+          <div class="config-section">
+            <h4 class="config-section-title">Experiences</h4>
+            <p class="modal-note">Formative moments that led to this value. Grant a boon when relevant to the current scenario and a polarity from this value is in use.</p>
+            <div id="config-experience-list" class="config-item-list"></div>
+            <button id="config-experience-add" type="button" class="config-add-btn">+ Experience</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-value-config-save" type="button" class="btn-primary">Save &amp; Close</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('btn-value-config-close').addEventListener('click', closeConfigModal);
+    document.getElementById('btn-value-config-save').addEventListener('click', closeConfigModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeConfigModal(); });
+
+    document.getElementById('config-polarity-add').addEventListener('click', addConfigPolarity);
+    document.getElementById('config-experience-add').addEventListener('click', addConfigExperience);
+
+    document.getElementById('config-polarity-list').addEventListener('click', e => {
+      const btn = e.target.closest('.config-delete-btn');
+      if (btn) deleteConfigItem(btn.closest('.config-item-row'), 'polarity');
+    });
+    document.getElementById('config-experience-list').addEventListener('click', e => {
+      const btn = e.target.closest('.config-delete-btn');
+      if (btn) deleteConfigItem(btn.closest('.config-item-row'), 'experience');
+    });
+
+    document.getElementById('config-polarity-list').addEventListener('input',  onConfigInput);
+    document.getElementById('config-experience-list').addEventListener('input', onConfigInput);
+  }
+
+  function buildConfigItemRow(id, value, placeholder) {
+    const row     = document.createElement('div');
+    row.className = 'config-item-row';
+    row.dataset.id = id;
+    const escaped  = (value || '').replace(/"/g, '&quot;');
+    row.innerHTML  = `
+      <input type="text" class="config-item-input" placeholder="${placeholder}" value="${escaped}">
+      <button class="config-delete-btn btn-icon" type="button" aria-label="Remove">×</button>
+    `;
+    return row;
+  }
+
+  function populateConfigModal(idx) {
+    const name = getValueNameAt(idx);
+    document.getElementById('value-config-title').textContent =
+      `#${idx + 1} ${name || '(unnamed)'}`;
+
+    const data  = _valueData[idx];
+
+    const pList = document.getElementById('config-polarity-list');
+    pList.innerHTML = '';
+    data.polarities.forEach(p => pList.appendChild(buildConfigItemRow(p.id, p.name, 'Polarity name')));
+    document.getElementById('config-polarity-add').disabled   = data.polarities.length  >= 4;
+
+    const eList = document.getElementById('config-experience-list');
+    eList.innerHTML = '';
+    data.experiences.forEach(e => eList.appendChild(buildConfigItemRow(e.id, e.description, 'Experience')));
+    document.getElementById('config-experience-add').disabled = data.experiences.length >= 4;
+  }
+
+  function getValueNameAt(idx) {
+    const rows = document.querySelectorAll('#values-list .value-row');
+    return rows[idx] ? rows[idx].querySelector('.value-name-input').value.trim() : '';
+  }
+
+  function syncModalToData() {
+    if (_configIdx === null) return;
+
+    const polarities = [];
+    document.querySelectorAll('#config-polarity-list .config-item-row').forEach(row => {
+      polarities.push({ id: row.dataset.id, name: row.querySelector('.config-item-input').value.trim() });
+    });
+
+    const experiences = [];
+    document.querySelectorAll('#config-experience-list .config-item-row').forEach(row => {
+      experiences.push({ id: row.dataset.id, description: row.querySelector('.config-item-input').value.trim() });
+    });
+
+    _valueData[_configIdx] = { polarities, experiences };
+  }
+
+  function onConfigInput() {
+    syncModalToData();
+    const rows = document.querySelectorAll('#values-list .value-row');
+    if (rows[_configIdx]) updateSummary(rows[_configIdx], _configIdx);
+    _onUpdate();
+  }
+
+  function addConfigPolarity() {
+    const data = _valueData[_configIdx];
+    if (data.polarities.length >= 4) return;
+    const id = Schema.newId();
+    data.polarities.push({ id, name: '' });
+    const row = buildConfigItemRow(id, '', 'Polarity name');
+    document.getElementById('config-polarity-list').appendChild(row);
+    document.getElementById('config-polarity-add').disabled = data.polarities.length >= 4;
+    row.querySelector('.config-item-input').focus();
+    _onUpdate();
+  }
+
+  function addConfigExperience() {
+    const data = _valueData[_configIdx];
+    if (data.experiences.length >= 4) return;
+    const id   = Schema.newId();
+    data.experiences.push({ id, description: '' });
+    const row  = buildConfigItemRow(id, '', 'Experience');
+    document.getElementById('config-experience-list').appendChild(row);
+    document.getElementById('config-experience-add').disabled = data.experiences.length >= 4;
+    row.querySelector('.config-item-input').focus();
+    _onUpdate();
+  }
+
+  function deleteConfigItem(row, kind) {
+    const id   = row.dataset.id;
+    const data = _valueData[_configIdx];
+    if (kind === 'polarity')   data.polarities  = data.polarities.filter(p => p.id !== id);
+    if (kind === 'experience') data.experiences = data.experiences.filter(e => e.id !== id);
+    row.remove();
+    document.getElementById('config-polarity-add').disabled   = data.polarities.length  >= 4;
+    document.getElementById('config-experience-add').disabled = data.experiences.length >= 4;
+    const rows = document.querySelectorAll('#values-list .value-row');
+    if (rows[_configIdx]) updateSummary(rows[_configIdx], _configIdx);
+    _onUpdate();
+  }
+
+  function openConfigModal(idx) {
+    _configIdx = idx;
+    populateConfigModal(idx);
+    document.getElementById('value-config-modal').hidden = false;
+    document.getElementById('btn-value-config-close').focus();
+  }
+
+  function closeConfigModal() {
+    syncModalToData();
+    const rows = document.querySelectorAll('#values-list .value-row');
+    if (rows[_configIdx]) updateSummary(rows[_configIdx], _configIdx);
+    _configIdx = null;
+    document.getElementById('value-config-modal').hidden = true;
+    _onUpdate();
+  }
+
+  // ─── Main row listeners ───────────────────────────────────────
 
   function setupListeners() {
     const list = document.getElementById('values-list');
 
-    list.addEventListener('input', _onUpdate);
+    list.addEventListener('input', e => {
+      // Keep config modal title in sync when the name input changes
+      if (_configIdx !== null && e.target.classList.contains('value-name-input')) {
+        const rows = Array.from(list.querySelectorAll(':scope > .value-row'));
+        const idx  = rows.indexOf(e.target.closest('.value-row'));
+        if (idx === _configIdx) {
+          document.getElementById('value-config-title').textContent =
+            `#${idx + 1} ${e.target.value.trim() || '(unnamed)'}`;
+        }
+      }
+      _onUpdate();
+    });
 
     list.addEventListener('click', e => {
       if (e.target.closest('.value-move-btn')) {
@@ -151,17 +313,20 @@ const Values = (() => {
         _onUpdate();
         return;
       }
-      if (e.target.closest('.polarity-add-btn')) {
-        addPolarity(e.target.closest('.value-row'));
-        return;
-      }
-      if (e.target.closest('.polarity-delete-btn')) {
-        deletePolarity(e.target.closest('.polarity-row'));
+      if (e.target.closest('.value-config-btn')) {
+        const rows = Array.from(list.querySelectorAll(':scope > .value-row'));
+        openConfigModal(rows.indexOf(e.target.closest('.value-row')));
         return;
       }
     });
 
-    document.getElementById('btn-values-ref').addEventListener('click', openModal);
+    document.getElementById('btn-values-ref').addEventListener('click', openRefModal);
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      if (!document.getElementById('value-config-modal').hidden) closeConfigModal();
+      else if (!document.getElementById('values-modal').hidden)  closeRefModal();
+    });
 
     setupDragDrop(list);
   }
@@ -171,41 +336,23 @@ const Values = (() => {
   function moveValueRow(row, direction) {
     const list   = document.getElementById('values-list');
     const rows   = Array.from(list.querySelectorAll(':scope > .value-row'));
-    const target = rows[rows.indexOf(row) + direction];
+    const idx    = rows.indexOf(row);
+    const target = rows[idx + direction];
     if (!target) return;
+
+    [_valueData[idx], _valueData[idx + direction]] = [_valueData[idx + direction], _valueData[idx]];
+
     if (direction === -1) list.insertBefore(row, target);
     else target.insertAdjacentElement('afterend', row);
   }
 
-  // ─── Polarity add / delete ────────────────────────────────────
-
-  function addPolarity(valueRow) {
-    const container = valueRow.querySelector('.polarity-list');
-    const addBtn    = valueRow.querySelector('.polarity-add-btn');
-    if (addBtn.disabled) return;
-
-    const row = buildPolarityRow(Schema.newId());
-    container.appendChild(row);
-    addBtn.disabled = container.children.length >= 4;
-    row.querySelector('.polarity-name-input').focus();
-    _onUpdate();
-  }
-
-  function deletePolarity(polarityRow) {
-    const valueRow  = polarityRow.closest('.value-row');
-    const container = polarityRow.closest('.polarity-list');
-    polarityRow.remove();
-    valueRow.querySelector('.polarity-add-btn').disabled = container.children.length >= 4;
-    _onUpdate();
-  }
-
-  // ─── Drag and Drop ────────────────────────────────────────────
+  // ─── Drag and drop ────────────────────────────────────────────
 
   function setupDragDrop(list) {
-    let dragSrc   = null;
-    let dragAllow = false;
+    let dragSrc    = null;
+    let dragSrcIdx = null;
+    let dragAllow  = false;
 
-    // Only allow drag when starting from the handle
     list.addEventListener('mousedown', e => {
       dragAllow = !!e.target.closest('.drag-handle');
     });
@@ -214,9 +361,10 @@ const Values = (() => {
       if (!dragAllow) { e.preventDefault(); return; }
       dragSrc = e.target.closest('.value-row');
       if (!dragSrc) return;
+      dragSrcIdx = Array.from(list.querySelectorAll(':scope > .value-row')).indexOf(dragSrc);
       dragSrc.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', ''); // required for Firefox
+      e.dataTransfer.setData('text/plain', '');
       dragAllow = false;
     });
 
@@ -231,15 +379,23 @@ const Values = (() => {
     });
 
     list.addEventListener('dragend', () => {
-      if (dragSrc) { dragSrc.classList.remove('dragging'); dragSrc = null; }
+      if (!dragSrc) return;
+      dragSrc.classList.remove('dragging');
+      const newIdx = Array.from(list.querySelectorAll(':scope > .value-row')).indexOf(dragSrc);
+      if (newIdx !== dragSrcIdx) {
+        const moved = _valueData.splice(dragSrcIdx, 1)[0];
+        _valueData.splice(newIdx, 0, moved);
+      }
+      dragSrc    = null;
+      dragSrcIdx = null;
       updateRankLabels();
       _onUpdate();
     });
   }
 
-  // ─── Modal ────────────────────────────────────────────────────
+  // ─── Reference modal (values + polarities lookup) ─────────────
 
-  function buildModal() {
+  function buildRefModal() {
     const valueRows = Schema.BASELINE_VALUES.map((v, i) => `
       <tr><td>${i + 1}</td><td>${v.name}</td><td>${v.description}</td></tr>
     `).join('');
@@ -258,14 +414,14 @@ const Values = (() => {
       </div>
     `).join('');
 
-    const overlay      = document.createElement('div');
-    overlay.id         = 'values-modal';
-    overlay.className  = 'modal-overlay';
-    overlay.hidden     = true;
+    const overlay     = document.createElement('div');
+    overlay.id        = 'values-modal';
+    overlay.className = 'modal-overlay';
+    overlay.hidden    = true;
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('aria-labelledby', 'values-modal-title');
-    overlay.innerHTML  = `
+    overlay.innerHTML = `
       <div class="modal">
         <div class="modal-header">
           <h3 id="values-modal-title">Reference</h3>
@@ -294,23 +450,20 @@ const Values = (() => {
       const btn = e.target.closest('.ref-tab-btn');
       if (!btn) return;
       const idx = btn.dataset.tab;
-      overlay.querySelectorAll('.ref-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === idx));
+      overlay.querySelectorAll('.ref-tab-btn').forEach(b   => b.classList.toggle('active', b.dataset.tab   === idx));
       overlay.querySelectorAll('.ref-tab-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === idx));
     });
 
-    document.getElementById('btn-values-modal-close').addEventListener('click', closeModal);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && !overlay.hidden) closeModal();
-    });
+    document.getElementById('btn-values-modal-close').addEventListener('click', closeRefModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeRefModal(); });
   }
 
-  function openModal() {
+  function openRefModal() {
     document.getElementById('values-modal').hidden = false;
     document.getElementById('btn-values-modal-close').focus();
   }
 
-  function closeModal() {
+  function closeRefModal() {
     document.getElementById('values-modal').hidden = true;
     document.getElementById('btn-values-ref').focus();
   }

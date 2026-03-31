@@ -44,15 +44,20 @@ const Strain = (() => {
     document.getElementById('strain-max').textContent         = String(max);
     document.getElementById('strain-max-derived').textContent = String(max);
 
+    const hasInvigorated = (character.passiveAbilities || []).some(function(p) { return p.name === 'Invigorated'; });
+    const maxWounds      = hasInvigorated ? 4 : 3;
+    const pip4           = document.getElementById('wound-pip-4');
+    if (pip4) pip4.hidden = !hasInvigorated;
+
     const woundCount = (character.conditions || []).filter(function(c) { return c.isWound; }).length;
-    for (var i = 1; i <= 3; i++) {
+    for (var i = 1; i <= maxWounds; i++) {
       var pip = document.getElementById('wound-pip-' + i);
       if (pip) pip.classList.toggle('wound-pip-active', i <= woundCount);
     }
 
     const atMax = current >= max;
-    document.getElementById('strain-unconscious-warning').hidden = !(atMax && woundCount < 3);
-    document.getElementById('strain-dying-warning').hidden       = !(atMax && woundCount >= 3);
+    document.getElementById('strain-unconscious-warning').hidden = !(atMax && woundCount < maxWounds);
+    document.getElementById('strain-dying-warning').hidden       = !(atMax && woundCount >= maxWounds);
   }
 
   function read() {

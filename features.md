@@ -34,7 +34,7 @@ Fields to include:
 
 - `meta`: app version, schema version, last saved date
 - `identity`: name, lineage (one of 7 lineages), realm (0-5), xp total, xp allocated
-- `values`: array of 4 objects, each with rank (1-4) and value name (free text)
+- `values`: array of 4 objects, each with rank (1-4), value name (free text), and an `experiences` array (each experience has an id and free-text description)
 - `polarities`: array of objects, each with name, linked value rank, and a flag for whether it is the lineage polarity
 - `strain`: current strain, xp invested in strain (max is calculated)
 - `conditions`: array of objects, each with a name and a strain rating
@@ -43,6 +43,12 @@ Fields to include:
 - `activeAbilities`: array of ability objects (see Active Ability Builder feature)
 - `passiveAbilities`: array of objects with name, level, and notes
 - `favor`: array of objects with type (local/personal/organizational), entity name, and rating
+- `renTexture`: string, one of `"Tranquil"` | `"Volatile"` | `"Rampant"`, default `"Tranquil"`
+- `weapons`: array of up to 4 objects, each with `name`, `damageType`, and `range` (all free text)
+- `ammo`: object with `spent` (number) and `max` (number)
+- `carryWeight`: object with `xpInvested` (number); slots value is calculated (`6 + xpInvested * 2`)
+- `background`: object with `firstRenMoment`, `territoryRaisedIn`, `environmentRaisedIn`, `upbringing`, `primaryCaretakerBackground`, `whyLearnedRen`, `howLearnedRen`, `backstory` (all free text)
+- `adventures`: array of objects, each with `type` (free text) and `notes` (free text)
 - `notes`: free text string
 
 ---
@@ -59,6 +65,7 @@ The structural frame of the app with no character data yet. This is what gets bu
 - Header with app name and theme toggle
 - Placeholder sections for each sheet area (empty, labeled)
 - No character data, no interactivity yet
+- Tab navigation bar (Sheet, Equipment, Backstory, Notes) below the header
 
 ---
 
@@ -119,6 +126,19 @@ Four ranked values and their associated polarities. Polarities are nested direct
 
 ---
 
+### 5b. Experiences (under Values)
+
+**Status:** `done`
+
+Each value holds a list of experiences: the formative moments that led the character to hold that belief. In play, an experience grants a boon when it is relevant to the current scenario and a polarity under its parent value is being used.
+
+- Each value row has an Experiences section below its polarities
+- Add and remove experiences freely, max 4 per value (matching the polarity cap)
+- Each experience is a free-text description input with a delete button
+- Experiences are stored in the character JSON under their parent value object
+
+---
+
 ### 6. Awareness Range
 
 **Status:** `done`
@@ -157,11 +177,9 @@ Six locations displayed as a structured panel:
 | Location | Material | Armor Strain (AS) | Absorbed | Status |
 |---|---|---|---|---|
 | Head | (dropdown) | (calculated) | (input) | (ok/broken) |
-| Shoulders | ... | ... | ... | ... |
+| Arms | ... | ... | ... | ... |
 | Center | ... | ... | ... | ... |
-| Wrists | ... | ... | ... | ... |
 | Legs | ... | ... | ... | ... |
-| Feet | ... | ... | ... | ... |
 
 - Locations displayed in die-roll order, with die number shown inline: Head (1), Shoulders (2), Wrists (3), Legs (4), Feet (5), Center (6–8)
 - AS is a direct dropdown (0–10) per location; no material tracking
@@ -205,7 +223,7 @@ Named conditions with strain ratings tracking ongoing injuries and effects.
 
 ### 11. Active Ability Builder
 
-**Status:** `planned`
+**Status:** `done`
 
 A structured form for creating and storing active abilities. Auto-calculates Strain cost.
 
@@ -254,7 +272,7 @@ Permanent upgrades purchased with XP.
 
 ### 13. Favor
 
-**Status:** `planned`
+**Status:** `done`
 
 Social standing and relationship capital.
 
@@ -268,15 +286,108 @@ Social standing and relationship capital.
 
 ---
 
-### 14. Notes
+### 14. Ren Texture
 
-**Status:** `planned`
+**Status:** `done`
 
-Free-text space for character background, appearance, session notes, etc.
+The stability of a character's Ren circulation, which determines boon and complication trigger frequency.
+
+- Single dropdown: Tranquil / Volatile / Rampant
+- Displays the boon and complication trigger range for the selected texture (e.g., "Boons on Min; Complications on Max")
+- Reference tooltip summarizing all three textures and their per-die trigger values
+
+---
+
+### 15. Weapons
+
+**Status:** `done`
+
+Up to 4 weapons managed in the Equipment tab.
+
+- Four weapon slots max, added via "+ Weapon" button up to the cap
+- Each weapon has:
+  - Name (free text)
+  - Damage Type (free text)
+  - Range (free text)
+- Remove button per slot
+- Compact summary displayed on the main sheet above Active Abilities
+
+---
+
+### 16. Ammo
+
+**Status:** `done`
+
+Tracks a single ammunition pool.
+
+- Spent and Max number inputs in the Equipment tab
+- Quick +1 on Spent via button on the main sheet summary
+- Main sheet shows spent / max at a glance
+
+---
+
+### 17. Carry Weight
+
+**Status:** `done`
+
+How many inventory slots the character contributes to the party pool.
+
+- XP invested in Carry Weight (number input, counts toward XP spent)
+- Slots contributed (calculated: `6 + XP invested × 2`, displayed read-only)
+- No party inventory tracking in this sheet; this field is for reference only
+
+---
+
+### 18. Background
+
+**Status:** `done`
+
+Structured character history drawn from the lifepath system.
+
+- What caused you to first feel Ren? (free text)
+- Territory Raised In (free text)
+- Environment Raised In (free text)
+- Upbringing (free text)
+- Primary Caretaker's Background (free text)
+- Why you learned Ren (free text)
+- How you learned Ren (free text)
+- Written backstory (large text area)
+
+All fields are optional and save with the character file.
+
+---
+
+### 19. Adventures
+
+**Status:** `done`
+
+Pre-play missions and ordeals the character has already survived. Lives in the Backstory modal as a single open text area (stored inside the `background` object). Simplified from the originally planned structured list.
+
+---
+
+### 20. Notes
+
+**Status:** `done`
+
+Free-text space for appearance, session notes, miscellaneous details. Lives in the Notes tab.
 
 - Single large text area
 - Saves with the character file
 - No formatting, no markdown rendering
+
+---
+
+### 21. Trinkets & Items
+
+**Status:** `done`
+
+Personal possessions that are not party inventory. Opened via a header nav button alongside Backstory and Notes.
+
+- Money field at the top: single free-text input (supports any denomination or format)
+- Trinket list below: add and remove freely
+- Each trinket has a name (free text) and an optional note (free text)
+- No cap on trinket count
+- Stored as `character.trinkets` (array of `{ id, name, note }`) and `character.money` (string)
 
 ---
 
