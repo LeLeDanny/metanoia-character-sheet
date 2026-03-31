@@ -257,7 +257,7 @@ Max active abilities: 20, displayed as a counter. Abilities beyond the max are f
 
 ### 12. Passive Abilities
 
-**Status:** `planned`
+**Status:** `done`
 
 Permanent upgrades purchased with XP.
 
