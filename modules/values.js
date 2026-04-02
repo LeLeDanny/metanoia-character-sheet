@@ -407,8 +407,9 @@ const Values = (() => {
     const tabPanels = Schema.POLARITIES_BY_CATEGORY.map((cat, i) => `
       <div class="ref-tab-panel${i === 0 ? ' active' : ''}" data-panel="${i}">
         <table class="polarity-ref-table">
+          <thead><tr><th>Polarity</th><th>Description</th><th>Spirit</th></tr></thead>
           <tbody>${cat.entries.map(e => `
-            <tr><td>${e.name}</td><td>${e.description}</td></tr>
+            <tr><td>${e.name}</td><td>${e.description}</td><td>${e.spirit || '—'}</td></tr>
           `).join('')}</tbody>
         </table>
       </div>
@@ -435,7 +436,7 @@ const Values = (() => {
             <tbody>${valueRows}</tbody>
           </table>
           <h4 class="ref-section-title ref-section-gap">Polarities</h4>
-          <p class="modal-note">79 polarities across 12 categories. Characters may use polarities not on this list.</p>
+          <p class="modal-note">88 polarities across 12 categories. Characters may use polarities not on this list.</p>
           <div class="ref-tabs">
             <div class="ref-tab-bar">${tabButtons}</div>
             <div class="ref-tab-panels">${tabPanels}</div>
