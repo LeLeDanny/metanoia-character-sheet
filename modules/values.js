@@ -435,7 +435,7 @@ const Values = (() => {
             <tbody>${valueRows}</tbody>
           </table>
           <h4 class="ref-section-title ref-section-gap">Polarities</h4>
-          <p class="modal-note">110 polarities across 13 categories. Characters may use polarities not on this list.</p>
+          <p class="modal-note">79 polarities across 12 categories. Characters may use polarities not on this list.</p>
           <div class="ref-tabs">
             <div class="ref-tab-bar">${tabButtons}</div>
             <div class="ref-tab-panels">${tabPanels}</div>
