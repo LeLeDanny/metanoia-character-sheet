@@ -238,6 +238,8 @@ const Schema = (() => {
       { name: 'Randomness',  description: 'Unpredictable outcome.',                         spirit: 'Murinek'  },
       { name: 'Equilibrium', description: 'Balance of opposing forces in stable tension.',  spirit: 'Irdimet'  },
       { name: 'Peace',       description: 'Lack of Conflict.',                              spirit: 'Chalema'  },
+      { name: 'Purity',      description: 'Clarity of essential nature.',                   spirit: 'Lithuin'  },
+      { name: 'Time',        description: 'The passage, weight, and inevitability of moments.', spirit: 'Shirei' },
     ]},
     { category: 'Loci', entries: [
       { name: 'Sea',      description: 'Vast, deep, shifting waters.',       spirit: 'Marvem'  },
