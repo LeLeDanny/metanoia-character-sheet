@@ -173,6 +173,14 @@ const PassiveAbilities = (() => {
         return notesBadge(notes || '\u2014') + derivedBadge('\u2212' + level + ' Strain') + xpPart;
       }
 
+      case 'Vulnerability': {
+        var vdt     = Schema.DAMAGE_TYPES.find(function(d) { return d.name === notes; });
+        var vMult   = vdt ? (vdt.xpPerLevel || 1) : 1;
+        var grant   = level * vMult;
+        var grantEl = '<span class="passive-row-xp">(+' + grant + '\u00a0XP)</span>';
+        return notesBadge(notes || '\u2014') + derivedBadge('+' + level + ' Strain') + grantEl;
+      }
+
       case 'Advanced Awareness':
         return notesBadge(notes || '\u2014') + levelBadge(level) + derivedBadge('+' + level + ' band' + (level !== 1 ? 's' : ''));
 
@@ -454,6 +462,62 @@ const PassiveAbilities = (() => {
         var totalEl    = document.getElementById('pf-total-xp');
         if (totalRowEl) totalRowEl.hidden = xpMult <= 1;
         if (totalEl)    totalEl.textContent = String(l * xpMult);
+      }
+    },
+
+    'Vulnerability': {
+      buildContent: function(data) {
+        var l        = Math.min(data.level || 1, 5);
+        var selected = data.notes || Schema.DAMAGE_TYPES[0].name;
+        var opts     = Schema.DAMAGE_TYPES.map(function(dt) {
+          return '<option value="' + esc(dt.name) + '"' + (dt.name === selected ? ' selected' : '') + '>' + esc(dt.name) + '</option>';
+        }).join('');
+        var dt     = Schema.DAMAGE_TYPES.find(function(d) { return d.name === selected; });
+        var covers = dt && dt.covers ? dt.covers : null;
+        var xpMult = dt ? (dt.xpPerLevel || 1) : 1;
+        var coversHtml = '<div class="pf-covers" id="pf-covers"' + (covers ? '' : ' hidden') + '>' +
+          '<span class="pf-covers-label">Covers:</span>' +
+          '<span id="pf-covers-list">' + (covers ? covers.map(function(c) { return '<span class="pf-covers-badge">' + esc(c) + '</span>'; }).join('') : '') + '</span>' +
+        '</div>';
+        return (
+          descBlock('Take on increased damage from a specific damage type in exchange for XP. Each level increases incoming Strain of that type by 1 and grants 1 XP back to your pool. Maximum level 5.') +
+          '<div class="field mt-md">' +
+            '<label for="pf-damage-type">Damage Type</label>' +
+            '<select id="pf-damage-type">' + opts + '</select>' +
+          '</div>' +
+          '<p class="pf-type-desc" id="pf-type-desc">' + esc(dt ? dt.desc : '') + '</p>' +
+          coversHtml +
+          '<div class="cols-2 mt-sm">' +
+            levelFields(l, 5) +
+            derivedField('Extra Strain', 'pf-derived', '+' + l + ' Strain') +
+          '</div>' +
+          '<div class="pf-total-xp-row" id="pf-total-xp-row">' +
+            '<span class="pf-total-xp-label">XP Granted</span>' +
+            '<span class="derived" id="pf-total-xp">+' + (l * xpMult) + '</span>' +
+          '</div>' +
+          costNote('Grants XP instead of costing XP. Add a separate entry for each damage type.')
+        );
+      },
+      readData: function() {
+        return { level: Math.min(5, pfLevel()), notes: pfVal('pf-damage-type') };
+      },
+      onInput: function() {
+        var l      = Math.min(5, pfLevel());
+        var type   = pfVal('pf-damage-type');
+        var dt     = Schema.DAMAGE_TYPES.find(function(d) { return d.name === type; });
+        var covers = dt && dt.covers ? dt.covers : null;
+        var xpMult = dt ? (dt.xpPerLevel || 1) : 1;
+        setPfDerived('+' + l + ' Strain');
+        var descEl = document.getElementById('pf-type-desc');
+        if (descEl) descEl.textContent = dt ? dt.desc : '';
+        var coversEl = document.getElementById('pf-covers');
+        if (coversEl) {
+          coversEl.hidden = !covers;
+          var listEl = document.getElementById('pf-covers-list');
+          if (listEl) listEl.innerHTML = covers ? covers.map(function(c) { return '<span class="pf-covers-badge">' + esc(c) + '</span>'; }).join('') : '';
+        }
+        var totalEl = document.getElementById('pf-total-xp');
+        if (totalEl) totalEl.textContent = '+' + (l * xpMult);
       }
     },
 

@@ -175,6 +175,7 @@ const Schema = (() => {
   // maxLevel: null means no cap
   const PASSIVE_ABILITIES = [
     { name: 'Resistant',               costType: 'leveled',        maxLevel: null },
+    { name: 'Vulnerability',           costType: 'leveled',        maxLevel: 5,    grantsXp: true },
     { name: 'Juggernaut',              costType: 'flat',           maxLevel: 1    },
     { name: 'Advanced Awareness',      costType: 'leveled',        maxLevel: null },
     { name: 'Stability',               costType: 'leveled',        maxLevel: null },
@@ -395,10 +396,11 @@ const Schema = (() => {
       .reduce((sum, l) => sum + (l.level ?? 0), 0);
     const passiveXp   = (character.passiveAbilities ?? [])
       .reduce((sum, p) => {
-        if (p.name === 'Resistant') {
-          const dt   = DAMAGE_TYPES.find(d => d.name === p.notes);
-          const mult = dt ? (dt.xpPerLevel || 1) : 1;
-          return sum + (p.level ?? 0) * mult;
+        if (p.name === 'Resistant' || p.name === 'Vulnerability') {
+          const dt    = DAMAGE_TYPES.find(d => d.name === p.notes);
+          const mult  = dt ? (dt.xpPerLevel || 1) : 1;
+          const magnitude = (p.level ?? 0) * mult;
+          return sum + (p.name === 'Vulnerability' ? -magnitude : magnitude);
         }
         return sum + (p.level ?? 0);
       }, 0);
