@@ -432,25 +432,14 @@ const ActiveAbilities = (() => {
   }
 
   function updateModalIntentValidation() {
-    var stateRadio = document.querySelector('input[name="modal-aw-state"]:checked');
-    var stateKey = stateRadio ? stateRadio.value : 'suppressed';
-    var stateDef = Schema.ABILITY_AWARENESS[stateKey];
-    var allowed = stateDef.allowedIntents || null;
-    var warningEl = document.getElementById('modal-intent-warning');
-    var hasInvalid = false;
-
+    // No intent constraints; all intents are available for all awareness states.
     document.querySelectorAll('.modal-intent-check').forEach(function(cb) {
       var label = cb.closest('.ability-intent-label');
-      if (allowed && allowed.indexOf(cb.value) === -1) {
-        label.classList.add('ability-intent-disabled');
-        if (cb.checked) hasInvalid = true;
-      } else {
-        label.classList.remove('ability-intent-disabled');
-      }
+      label.classList.remove('ability-intent-disabled');
     });
-
-    warningEl.textContent = hasInvalid ? 'Extended awareness does not support the selected intent(s)' : '';
-    warningEl.hidden = !hasInvalid;
+    var warningEl = document.getElementById('modal-intent-warning');
+    warningEl.textContent = '';
+    warningEl.hidden = true;
   }
 
   function updateCastXVisibility() {
