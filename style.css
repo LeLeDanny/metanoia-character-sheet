@@ -301,7 +301,7 @@ label {
   display: flex;
   align-items: center;
   gap: 0.4em;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -312,8 +312,8 @@ label {
 }
 
 .section-icon {
-  width: 1.1em;
-  height: 1.1em;
+  width: 1.5em;
+  height: 1.5em;
   flex-shrink: 0;
 }
 
