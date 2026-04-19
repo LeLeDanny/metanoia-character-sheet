@@ -391,6 +391,20 @@ Personal possessions that are not party inventory. Opened via a header nav butto
 
 ---
 
+### 22. Section Icons
+
+**Status:** `done`
+
+Small inline SVG icons to the left of each section heading on the main character sheet for faster visual scanning.
+
+- 14 sections receive an icon: Identity, Awareness, Ren Texture, Stride & Carry Weight, Values, Armor, Strain, Environmental Protection, Conditions, Favor, Weapons, Ammo, Passive Abilities, Active Abilities
+- Icons are custom SVGs (48x48 viewBox, stroke-based) inlined directly in the HTML
+- Icons inherit the accent color via `currentColor`, adapting to both light and dark themes
+- No external dependencies added
+- Modal headings are intentionally left without icons
+
+---
+
 ## Post-MVP (Future)
 
 These are confirmed ideas for after the MVP is complete and stable.

@@ -36,7 +36,7 @@
     <div class="sheet-col">
       <div class="sheet-stack">
       <section class="sheet-section" id="section-identity">
-        <h2>Identity</h2>
+        <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="19.33" r="13.602" stroke-width="3"/><path d="M2.625,42.273c0,-5.081 9.578,-9.207 21.375,-9.207c11.797,0 21.375,4.125 21.375,9.207" stroke-width="3"/></svg>Identity</h2>
 
         <div class="field">
           <label for="input-name">Name</label>
@@ -91,7 +91,7 @@
 
       <section class="sheet-section" id="section-awareness">
         <div class="section-heading">
-          <h2>Awareness</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M44.373,24c-3.116,3.116 -9.129,7.985 -20.373,7.985c-11.244,0 -17.538,-5.149 -20.373,-7.985" stroke-width="3"/><path d="M3.627,24c3.116,-3.116 9.129,-7.985 20.373,-7.985c11.244,0 17.538,5.149 20.373,7.985" stroke-width="3"/><circle cx="24" cy="24" r="6.956" stroke-width="3"/></svg>Awareness</h2>
           <button class="btn btn-sm" id="btn-awareness-ref" aria-label="Awareness states reference">?</button>
         </div>
         <div class="field">
@@ -127,7 +127,7 @@
       <div class="sheet-stack">
       <section class="sheet-section" id="section-ren-texture">
         <div class="section-heading">
-          <h2>Ren Texture</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M9.426,29.47c9.517,0 15.039,-7.866 15.039,-7.866l14.53,0" stroke-width="3"/><path d="M4.518,21.604c9.517,0 15.039,-7.866 15.039,-7.866l14.962,-3.074" stroke-width="3"/><path d="M13.913,37.336c9.517,0 15.039,-7.866 15.039,-7.866l14.53,5.533" stroke-width="3"/></svg>Ren Texture</h2>
           <button class="btn btn-sm" id="btn-ren-texture-ref" aria-label="Ren Texture reference">?</button>
         </div>
         <div class="field">
@@ -152,7 +152,7 @@
 
       <section class="sheet-section" id="section-stride">
         <div class="section-heading">
-          <h2>Stride &amp; Carry Weight</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M8.44,44.788l31.12,0l0,-41.576l-12.041,0l0,30.339l-19.079,2.716l0,8.521Z" stroke-width="3"/></svg>Stride &amp; Carry Weight</h2>
           <button class="btn btn-sm" id="btn-stride-ref" aria-label="Range bands reference">?</button>
         </div>
         <div class="stride-grid">
@@ -189,7 +189,7 @@
 
       <section class="sheet-section" id="section-values">
         <div class="section-heading">
-          <h2>Values</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="21.628" stroke-width="3"/><path d="M19.5,14.239l4.5,-9l4.5,9l-9,0Z" fill="currentColor"/><path d="M24,24l0,-11.561" stroke-width="3"/></svg>Values</h2>
           <button class="btn btn-sm" id="btn-values-ref" aria-label="Values reference">?</button>
         </div>
         <div id="values-list"></div>
@@ -202,7 +202,7 @@
       <div class="armor-strain-row">
         <section class="sheet-section" id="section-armor">
           <div class="section-heading">
-            <h2>Armor</h2>
+            <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M24,2.791l18.255,4.074l-2.625,25.863l-15.63,12.481l-15.63,-12.481l-2.625,-25.863l18.255,-4.074Z" stroke-width="3"/></svg>Armor</h2>
             <button class="btn btn-sm" id="btn-armor-ref" aria-label="Armor reference">?</button>
           </div>
           <table class="armor-table">
@@ -221,7 +221,7 @@
         </section>
 
         <section class="sheet-section" id="section-strain">
-          <h2>Strain</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M11.886,33.144c0,-11.783 12.114,-17.582 12.114,-30.402c0,12.82 12.114,18.619 12.114,30.402c0,6.686 -5.428,12.114 -12.114,12.114c-6.686,0 -12.114,-5.428 -12.114,-12.114" stroke-width="3"/></svg>Strain</h2>
 
           <div class="field">
             <label>Strain Taken</label>
@@ -234,23 +234,18 @@
             </div>
           </div>
 
-          <div class="cols-2 mt-md">
-            <div class="field">
-              <label for="select-strain-xp">XP Invested</label>
-              <select id="select-strain-xp">
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Strain Max</label>
-              <span class="derived" id="strain-max-derived">4</span>
-            </div>
+          <div class="field mt-md">
+            <label for="select-strain-xp">XP Invested</label>
+            <select id="select-strain-xp">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
           </div>
+          <span class="derived" id="strain-max-derived" hidden>4</span>
 
           <div class="field mt-sm">
             <label>Wounds</label>
@@ -267,7 +262,7 @@
       </div>
 
       <section class="sheet-section" id="section-env">
-        <h2>Environmental Protection</h2>
+        <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M26.705,34.32c1.725,0.955 2.894,2.793 2.894,4.903c0,3.09 -2.509,5.599 -5.599,5.599c-3.09,0 -5.599,-2.509 -5.599,-5.599c0,-2.11 1.169,-3.948 2.894,-4.903l0,-28.437c0,-1.493 1.212,-2.705 2.705,-2.705c1.493,0 2.705,1.212 2.705,2.705l-0,28.437Z" stroke-width="3"/><path d="M36.752,12.076l0.578,7.481l4.722,-4.789l-3.904,5.791l6.1,0.709l-6.1,0.709l3.904,5.791l-4.722,-4.789l-0.578,7.481l-0.578,-7.481l-4.722,4.789l3.904,-5.791l-6.1,-0.709l6.1,-0.709l-3.904,-5.791l4.722,4.789l0.578,-7.481Z" fill="currentColor"/><path d="M15.563,24.577c0,3.248 -2.646,5.885 -5.905,5.885c-3.259,0 -5.905,-2.637 -5.905,-5.885c0,-3.248 2.079,-3.646 3.161,-5.101c1.114,-1.497 1.354,-3.064 1.354,-3.064c0,0 1.013,1.589 0.712,3.321c-0.398,2.29 -0.022,2.84 -0.022,2.84c0,0 3.215,-2.279 2.804,-10.496c0,0 4.202,3.856 3.8,12.501Z" fill="currentColor"/></svg>Environmental Protection</h2>
         <div class="armor-env-checks">
           <label class="armor-env-label"><input type="checkbox" id="armor-env-hot"> Hot</label>
           <label class="armor-env-label"><input type="checkbox" id="armor-env-cold"> Cold</label>
@@ -278,7 +273,7 @@
 
       <section class="sheet-section" id="section-conditions">
         <div class="section-heading">
-          <h2>Conditions</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M24,4.889l21.082,38.222l-42.164,0l21.082,-38.222Z" stroke-width="3"/><path d="M24,14.198l0,17.407" stroke-width="3"/><ellipse cx="24" cy="36.95" rx="1.13" ry="1.024" stroke-width="3"/></svg>Conditions</h2>
           <button class="btn btn-sm" id="btn-add-condition" type="button">+ Condition</button>
         </div>
 
@@ -287,7 +282,7 @@
 
       <section class="sheet-section" id="section-favor">
         <div class="section-heading">
-          <h2>Favor</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M24,6.992l0,34.016" stroke-width="3"/><path d="M6.771,41.008l34.459,0" stroke-width="3"/><path d="M10.455,10.306l27.089,0" stroke-width="3"/><path d="M12.447,10.306l5.677,11.111l-11.354,0l5.677,-11.111Z" stroke-width="3"/><path d="M35.553,10.306l5.677,11.111l-11.354,0l5.677,-11.111Z" stroke-width="3"/></svg>Favor</h2>
           <button class="btn btn-sm" id="btn-favor-edit" type="button">Edit</button>
         </div>
         <p class="favor-pool-line">Starting pool: <span id="favor-starting-pool">2</span></p>
@@ -307,7 +302,7 @@
       <div class="weapons-ammo-pair">
         <section class="sheet-section" id="section-weapons-summary">
           <div class="section-heading">
-            <h2>Weapons</h2>
+            <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M16.423,21.402l23.175,-13.001l-13.001,23.175" stroke-width="3"/><path d="M29.912,34.891l-16.803,-16.803" stroke-width="3"/><path d="M22.668,27.647l-13.109,13.109l-2.316,-2.316l13.109,-13.109l2.316,2.316Z" stroke-width="3"/></svg>Weapons</h2>
             <button class="btn btn-sm" id="btn-open-equipment" type="button">Manage</button>
           </div>
           <select id="select-weapon-active" style="width:100%;margin-bottom:0.35rem">
@@ -317,7 +312,7 @@
         </section>
 
         <section class="sheet-section" id="section-ammo">
-          <h2>Ammo</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M36.724,4.912l6.364,0l0,6.364" stroke-width="3"/><path d="M7.05,40.95c0,0 29.047,-29.047 36.038,-36.038" stroke-width="3"/><path d="M3.412,35.904l8.684,0l-0,8.684" stroke-width="3"/><path d="M8.23,31.086l8.684,0l-0,8.684" stroke-width="3"/><path d="M13.049,26.267l8.684,0l-0,8.684" stroke-width="3"/></svg>Ammo</h2>
           <input type="text" id="input-ammo-text" placeholder="e.g. Bodkin arrows" class="ammo-text-input mt-sm">
           <div class="ammo-tracker mt-sm">
             <input type="number" id="input-ammo-used" class="ammo-used-input" min="0" value="0">
@@ -330,7 +325,7 @@
 
       <section class="sheet-section" id="section-passive-abilities">
         <div class="section-heading">
-          <h2>Passive Abilities</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M23.784,4.879c0.027,-0.097 0.115,-0.164 0.216,-0.164c0.101,0 0.189,0.067 0.216,0.164l3.764,13.489c0.11,0.394 0.32,0.754 0.61,1.043c0.29,0.29 0.649,0.499 1.043,0.61l13.489,3.764c0.097,0.027 0.164,0.115 0.164,0.216c0,0.101 -0.067,0.189 -0.164,0.216l-13.489,3.764c-0.394,0.11 -0.754,0.32 -1.043,0.61c-0.29,0.29 -0.499,0.649 -0.61,1.043l-3.764,13.489c-0.027,0.097 -0.115,0.164 -0.216,0.164c-0.101,0 -0.189,-0.067 -0.216,-0.164l-3.764,-13.489c-0.11,-0.394 -0.32,-0.754 -0.61,-1.043c-0.29,-0.29 -0.649,-0.499 -1.043,-0.61l-13.489,-3.764c-0.097,-0.027 -0.164,-0.115 -0.164,-0.216c0,-0.101 0.067,-0.189 0.164,-0.216l13.489,-3.764c0.394,-0.11 0.754,-0.32 1.043,-0.61c0.29,-0.29 0.499,-0.649 0.61,-1.043l3.764,-13.489Z" stroke-width="3"/></svg>Passive Abilities</h2>
           <button class="btn btn-sm" id="btn-add-passive" type="button">+ Passive</button>
         </div>
         <div id="passives-list"></div>
@@ -338,7 +333,7 @@
 
       <section class="sheet-section" id="section-active-abilities">
         <div class="section-heading">
-          <h2>Active Abilities</h2>
+          <h2><svg class="section-icon" viewBox="0 0 48 48" fill="none"><path d="M20.815,18.807l4.357,-12.639l-0.635,14.641l18.172,-15.517l-14.722,22.15l5.628,8.51l-11.166,-5.631l-6.899,12.389l2.36,-15.142l-12.618,-13.891l15.523,5.131Z" stroke-width="3"/></svg>Active Abilities</h2>
           <span class="ability-counter" id="ability-counter">0 / 20</span>
         </div>
         <div id="abilities-list"></div>

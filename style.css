@@ -298,7 +298,10 @@ label {
 }
 
 .sheet-section h2 {
-  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.95rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -306,6 +309,19 @@ label {
   padding-bottom: 0.55rem;
   margin-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
+}
+
+.section-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
+.section-icon path,
+.section-icon circle,
+.section-icon ellipse,
+.section-icon line {
+  stroke: currentColor;
 }
 
 /* ─── Placeholder (removed as sections are built out) ─────── */
